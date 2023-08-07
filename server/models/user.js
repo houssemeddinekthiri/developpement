@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema(
     name: String,
     image:String,
     signedUp:Boolean,
+    password: String,
     signature:Buffer,
     imageSignature:Buffer,
     defaultSignature:{type:Number,default:0},

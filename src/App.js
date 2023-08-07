@@ -22,7 +22,7 @@ import Experiment from './Experiment';
 import Pdf from './EditorPdf'
 import samplePDF from './sample.pdf'
 import Report from './Report';
-
+import SignupPage from './Signup'
 const THEME = createMuiTheme({
 
 });
@@ -35,8 +35,8 @@ function App() {
 
   const isLoggedIn = () => {
     if (Cookies.get('id') === null || Cookies.get('id') === undefined) return false;
-    let user = JSON.parse(window.atob(Cookies.get('id')));
-    return (Cookies.get('email') && Cookies.get('name') && user && user.email === Cookies.get('email') && user.name === Cookies.get('name'));
+  
+    return (Cookies.get('email') && Cookies.get('name') );
   }
   const protectRoute = (Component) => () => {
     return isLoggedIn() ? ( Component) : (<Redirect to='/login'></Redirect>)
@@ -46,6 +46,8 @@ function App() {
 
     <Router>
       <Switch>
+      <Route exact path="/signup" component={SignupPage} ></Route>
+   
         <Route path='/login' render={() => { return !isLoggedIn() ? (<> <LoginPage></LoginPage> </>) : (<Redirect to='/'></Redirect>) }}></Route>
         <Route exact path="/add/:fileID" render={protectRoute(
           <>
@@ -53,7 +55,7 @@ function App() {
             <WorkFlowStepper></WorkFlowStepper>
           </>
         )}></Route>
-
+ 
         <Route exact path="/status" render={protectRoute(
           <>
             <NavBar></NavBar>

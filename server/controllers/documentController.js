@@ -13,6 +13,7 @@ var sha512 = require('js-sha512');
 
 
 const { body, validationResult, sanitizeBody } = require("express-validator");
+const { Console } = require('console');
 require('dotenv').config();
 const mongoConnectionString = process.env.DB;
 const agenda = new Agenda({ db: { address: mongoConnectionString } });
@@ -20,28 +21,31 @@ const client = new google.auth.OAuth2(process.env.googleClientId, process.env.go
 const mailTransporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'smartdoc36@gmail.com', // Replace with the correct Gmail address
-      pass: 'Ent123456' // Replace with the correct Gmail account password or app password
+        user: "smartdoc36@gmail.com",
+        pass: "vqelrjlirkrkcvis"
+  
+   
     }
   });
   
  
 //Utitlity function to retrieve email from the JWT.
 function getEmail(req, res) {
-  if (!req.cookies.JWT) {
+   if (!req.cookies.JWT) {
     res.status(401).json({ error: "user not found" });
     return null;
   } else {
     let buff = Buffer.from(req.cookies.JWT.split(".")[1], "base64");
     let text = buff.toString("ascii");
-    let email = JSON.parse(text).email;
-    return email;
+    let email = req.cookies.email;
+ 
+    return  email;
   }
 }
 //returns the list of documents owned by the user and the documents shared by others to the user 
 exports.getUserDocuments = (req, res, next) => {
     let email = getEmail(req, res);
-    User.findOne({ 'email': email }, { ownerdDocuments: 1, sharedDocuments: 1 }).populate('ownedDocuments', { buffer: 0 }).populate('sharedDocuments', { buffer: 0 }).exec((err, resp) => {
+     User.findOne({ 'email': email }, { ownerdDocuments: 1, sharedDocuments: 1 }).populate('ownedDocuments', { buffer: 0 }).populate('sharedDocuments', { buffer: 0 }).exec((err, resp) => {
         if (err) {
             res.status(401).json({ error: "user not found" })
         }
@@ -74,8 +78,7 @@ exports.uploadDocument = async (req, res, next) => {
         pdfDoc.setKeywords([document._id]);
         let pdfBytes = await pdfDoc.save();
         document.buffer = Binary(pdfBytes);
-        console.log(pdfBytes);
-        document.lastModifiedHash = sha512(pdfBytes);
+         document.lastModifiedHash = sha512(pdfBytes);
         await document.save();
         let user = await User.findOne({ 'email': email }).exec();
         user.ownedDocuments.push(document._id);
@@ -153,8 +156,7 @@ exports.addSigners = async (req, res, next) => {
         }
         document.signers = signers;
         document.sequential = sequential;
-        console.log(isOwnerSigner);
-        document.isOwnerSigner = isOwnerSigner;
+         document.isOwnerSigner = isOwnerSigner;
         document.status = 'added_signers';
         await document.save();
         res.status(200).json({ message: 'ok' });
@@ -206,8 +208,7 @@ exports.uploadDocumentFromDrive = async (req, res, next) => {
 };
 
 exports.sendEmail = async (req, res, next) => {
-    console.log("sdfsdsd")
-    try {
+     try {
 
         let fileId = req.params.id;
         let document = await Document.findById(fileId, { signers: 1, status: 1 });
@@ -215,8 +216,7 @@ exports.sendEmail = async (req, res, next) => {
         await document.save();
         let signers = document.signers;
         let mailOptions;
-        console.log(signers);
-        for (let index = 0; index < signers.length; index++) {
+         for (let index = 0; index < signers.length; index++) {
             mailOptions = {
                 from: process.env.EMAIL,
                 to: signers[index].email,
@@ -263,8 +263,7 @@ exports.getDocment = async (req, res, next) => {
                     }
                 }
             });
-            console.log(signers);
-
+ 
             document.signers = signers;
             await document.save();
             res.status(200).json(document);
@@ -284,8 +283,7 @@ exports.getComments = async (req, res, next) => {
                 select: { email: 1, name: 1, image: 1 }
             }
         }).exec();
-        console.log(document);
-        res.status(200).json(document);
+         res.status(200).json(document);
     }
     catch (err) {
         res.status(500).json({ err: "Internal Server Error" });
@@ -298,8 +296,7 @@ exports.postComment = async (req, res, next) => {
         let user = await User.findOne({ email: getEmail(req, res) }, { _id: 1 }).exec();
         let comments = document.comments;
         comments = [...comments, { user: user.id, comment: req.body.message }];
-        console.log(comments);
-        document.comments = comments;
+         document.comments = comments;
         await document.save();
         res.status(200).json({ message: 'ok' });
 
@@ -332,10 +329,8 @@ exports.sigDocument = async (req, res, next) => {
                     const pdfDoc = await PDFDocument.load(document.buffer);
                     let pngImageBytes = (user.defaultSignature == 0 ? user.signature : user.imageSignature);
                     const pngImage = await pdfDoc.embedPng(pngImageBytes);
-                    console.log(pngImage);
-                    const pages = pdfDoc.getPages();
-                    console.log(modifications);
-                    modifications.forEach((modification, index) => {
+                     const pages = pdfDoc.getPages();
+                     modifications.forEach((modification, index) => {
 
                         if (modification) {
                             modification.forEach((image, id) => {
@@ -346,15 +341,13 @@ exports.sigDocument = async (req, res, next) => {
                                     width: (image.imagewidth / scale),
                                     height: (image.imageheight / scale)
                                 }
-                                console.log(imageDims);
-                                pages[index].drawImage(pngImage, imageDims)
+                                 pages[index].drawImage(pngImage, imageDims)
                             })
                         }
                     })
                     let pdfBytes = await pdfDoc.save();
                     document.buffer = Binary(pdfBytes);
-                    console.log(pdfBytes);
-                    document.lastModifiedHash = sha512(pdfBytes);
+                     document.lastModifiedHash = sha512(pdfBytes);
 
 
 
@@ -433,15 +426,12 @@ exports.verifyDocument = async (req, res, next) => {
         let pdfBytes = await pdfDoc.save();
         let uploadedDocumentHash = sha512(pdfBytes);
 
-        console.log(pdfBytes);
-        if (keywords && keywords.length > 0) {
+         if (keywords && keywords.length > 0) {
             let id = keywords;
             let doc = await Document.findById(id).exec();
             if (doc) {
 
-                console.log(doc.name);
-                console.log(doc.lastModifiedHash);
-                console.log(uploadedDocumentHash);
+            
                 if (doc.lastModifiedHash === uploadedDocumentHash) {
                     res.status(200).json({ verified: true, document: doc });
                 }
@@ -465,3 +455,4 @@ exports.verifyDocument = async (req, res, next) => {
 
     }
 }
+      

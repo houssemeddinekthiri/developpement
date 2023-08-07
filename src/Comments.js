@@ -37,8 +37,7 @@ export default function Comments(props) {
       if(comment  && comment.trim()!==''){
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/comments',{message:comment},{withCredentials:true}).then(
           (data) => {
-            console.log(data.data);
-            loadComments();
+             loadComments();
             setComment('');
           },
           (err)=> console.error(err)

@@ -124,8 +124,7 @@ export default function DocumentUpload(props) {
   const history = useHistory();
 
   useEffect(() => {
-    console.log(state);
-  }, [state])
+   }, [state])
 
 
   const onSelect = () => {

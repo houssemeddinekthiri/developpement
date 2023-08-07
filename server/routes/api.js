@@ -5,8 +5,10 @@ let express = require('express');
 let router = express.Router();
 let documentController = require("../controllers/documentController");
 let userController = require("../controllers/userController");
+ const { auth } = require('google-auth-library');
 
 router.get('', function (req, res) {
+    
     console.log(req.cookies.JWT);
     res.send('api works');
 });
@@ -34,4 +36,10 @@ router.get('/users/getkeys', userController.getKeys);
 router.get('/users/getkeystatus', userController.getKeyStatus);
 
 router.get('/users', userController.getUserNamesList);
+router.post('/signup', userController.signup);
+
+router.post('/login', userController.login);
+
+
+ 
 module.exports = router;

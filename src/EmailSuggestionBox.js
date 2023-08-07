@@ -30,8 +30,7 @@ export default function EmailSuggestionBox(props) {
             options={options}
             onChange={(event, newValue) => {
                 if (typeof newValue == 'string') {
-                    console.log(newValue);
-                    newValue = { email: newValue, name: null,image:null }
+                     newValue = { email: newValue, name: null,image:null }
 
                 }
                 setValue(newValue);

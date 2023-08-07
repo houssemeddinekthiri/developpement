@@ -31,8 +31,7 @@ exports.google_callback =async function(req,res,next){
      
     User.findOneAndUpdate(query, update, options, function (error, result) {
       if (error) {
-        console.log(error);
-        res.status(500).json({message:'Server Error'});
+         res.status(500).json({message:'Server Error'});
       }
       else {
         res.cookie('JWT', req.user.token, {

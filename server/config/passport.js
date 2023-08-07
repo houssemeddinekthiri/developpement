@@ -1,7 +1,11 @@
 let passport = require("passport");
 let GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 require('dotenv').config();
+ const bcrypt = require('bcryptjs');
+const User = require('../models/user');
+const LocalStrategy = require('passport-local').Strategy;
 
+ 
 passport.serializeUser(function(user, done) {
  done(null, user);
 });
@@ -30,3 +34,37 @@ passport.use(
   }
  )
 );
+
+
+
+
+passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+  try {
+    let user = await User.findOne({ email: email });
+    if (!user) {
+      return done(null, false, { message: 'Incorrect email.' });
+    }
+
+    bcrypt.compare(password, user.password, (err, isMatch) => {
+      if (err) throw err;
+      if (isMatch) {
+        return done(null, user);
+      } else {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+    });
+  } catch (err) {
+    return done(err);
+  }
+}));
+
+// Session handling
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
