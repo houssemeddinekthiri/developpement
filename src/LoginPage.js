@@ -13,6 +13,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import './styles.css';
+import image from './assets/images/LOGO.png'
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
@@ -82,12 +84,6 @@ export default function LoginPage() {
 
 
 <><div className="bg-light-main">
-<div className="md:container px-2.5 flex items-center justify-between lg:w-10/12">
-  <h1 className="">
-     <img className="logo" src={require('./assets/images/LOGO_2.png')}
-      />
-  </h1>
-</div>
 
 </div>
 <main className="banner">
