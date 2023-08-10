@@ -1,0 +1,21 @@
+/* App.css */
+.container {
+    display: flex;
+    height: 100vh; /* Ajustez la hauteur de la mise en page en fonction de vos besoins */
+  }
+  
+  .sidebar {
+    width: 250px; /* Ajustez la largeur de la sidebar */
+    background-color: #f0f0f0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    /* Appliquez d'autres styles de mise en page au contenu principal si nécessaire */
+  }
+  

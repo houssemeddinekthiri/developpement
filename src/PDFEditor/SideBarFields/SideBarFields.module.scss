@@ -1,0 +1,38 @@
+.fieldsWrapper {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  border-left: 1px solid black; /* Utilisez border-left au lieu de border-right */
+   /* Alignez le sidebar en haut */
+  right: 0; /* Alignez le sidebar à droite */
+  height: 100vh; /* Ajustez la hauteur du sidebar */
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.payloadWrapper {
+  margin-right: 200px; /* Ajustez la marge droite pour donner de l'espace au contenu principal */
+  height: 300px;
+  width: 400px;
+  font-size: 9px;
+  overflow: hidden;
+  flex-direction: column;
+  display: flex;
+}
+
+.payload {
+  overflow: auto;
+}
+
+.customPanel {
+  background-color: beige;
+  padding: 20px;
+  margin-top: 20px;
+}

@@ -80,11 +80,11 @@ export default function CenteredTabs() {
     <Paper className={classes.root}>
       <Tabs 
         style={{
-          color:"red"
+          color:"#3f51b5"
         }}
         value={value}
         onChange={handleChange}
-       
+        indicatorColor="primary"
       
         centered
       >

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Page from './Page';
+
 import * as pdfjsLib from "pdfjs-dist/build/pdf";
 import { grey } from '@material-ui/core/colors';
 import { AppBar, Grid, makeStyles, Toolbar, Typography } from '@material-ui/core';
@@ -18,12 +19,24 @@ import SignatureContext from './SignatureContext';
 import * as  fileDownload from 'js-file-download';
 import Cookies from 'js-cookie';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-
+import SideBarFields from './PDFEditor/SideBarFields/SideBarFields';
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
+import { PDFVisualizer } from './PDFCore';
+import PDFEditor from './PDFEditor/PDFEditor';
 import Loader from './Loader';
+const VISUAL_OPTIONS = {
+    SIMPLE: 'simple',
+    DRAGGABLE: 'draggable',
+  };
+  
+  const VISUAL_COMPONENTS = {
+    [VISUAL_OPTIONS.SIMPLE]: PDFVisualizer,
+    [VISUAL_OPTIONS.DRAGGABLE]: PDFEditor,
+  };
+  
 export default function Pdf(props) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
     const [state, _setState] = useState({
         scale: 1.3,
         pages: [],
@@ -35,6 +48,7 @@ export default function Pdf(props) {
     const [loader,setLoader] = useState(false);
     const [owner,setOwner] = useState(false);
     const [images,setImages] = useState(null);
+    
     const [signatureData,setSignatureData] = useState({});
     const setState = (data) => {
         _setState({ ...state, ...data });
@@ -46,8 +60,10 @@ export default function Pdf(props) {
           }, '');
         let base64String = btoa(STRING_CHAR);
           return 'data:image/png;base64, '+base64String;
-
+    
       }
+      const [fieldsByPages, setFieldsByPages] = useState({});
+ 
     useEffect(() => {
 
         setState({ pdf: props.pdf});
@@ -55,7 +71,7 @@ export default function Pdf(props) {
             {
               setOwner(true);
             }
-
+               
 
 
 
@@ -124,7 +140,7 @@ export default function Pdf(props) {
             );
         })
     }
-
+    const [downloadedPdfUrl, setDownloadedPdfUrl] = useState(null);
     const handleSign = ()=>{
         setLoader(true);
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{modifications:images,scale:state.scale},{withCredentials:true}).then(
@@ -156,8 +172,11 @@ export default function Pdf(props) {
        setLoader(true);
        let data  =toArrayBuffer(props.pdf.data);
        fileDownload(data,'signed.pdf');
+       const pdfBlob = new Blob([data], { type: 'application/pdf' });
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  setDownloadedPdfUrl(pdfUrl);
        setLoader(false);
-
+  
    }
    const history= useHistory();
    const setSigningMode = ()=>{
@@ -167,12 +186,15 @@ export default function Pdf(props) {
        }
    }
     const classes = useStyles();
+    const [mode, setMode] = useState(VISUAL_OPTIONS.DRAGGABLE);
 
+    const Visualizer = VISUAL_COMPONENTS[mode];
+  
     return (
           <SignatureContext.Provider value={signatureData}>
             <Loader open={loader}></Loader>
-            <AppBar position="static" style={{ backgroundImage: CONSTS.backgroundImage }}>
-                <Toolbar>
+            <AppBar position="fixed" Button="50px" style={{ backgroundImage: CONSTS.backgroundImage  }}>
+                <Toolbar >
                     <Button color="inherit" onClick={()=>history.goBack()}><ArrowBackIosIcon fontSize="small"></ArrowBackIosIcon> </Button>
                     <Typography variant="body1" className={classes.title}>
                         <PictureAsPdfIcon style={{ position: 'relative', top: '5px' }}></PictureAsPdfIcon> <span>{props.name}</span>
@@ -182,7 +204,7 @@ export default function Pdf(props) {
                      {(owner && !props.isOwnerSigner) || props.signed ? (<></>) : (
                          <>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
-
+                     
                         <Button color="inherit" onClick={() => { setSigningMode() }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
                         </>
                      )}
@@ -193,37 +215,18 @@ export default function Pdf(props) {
 
                 </Toolbar>
             </AppBar>
-
-            <Grid container>
-                <Grid item xs={9}>
-                    <div className={classes.root}>
-                        <PerfectScrollbar>
-
-                        {generatePages()}
-                        </PerfectScrollbar>
-                    </div>
-                </Grid>
-                {state.open || (owner&& !props.isOwnerSigner) || props.signed ? (<Grid item xs={3}>
-
-                    <Comments open={state.open} setState={setState}></Comments>
-                </Grid>) : (
-
-                    <Grid item xs={3} justify='center' alignItems='center'>
-                    <Grid container style={{width:'100%',height:'100%'}} justify='center' alignItems='center'>
-
-                            <div >
-
-                            <CustomButton text="Sign" onClick={handleSign} style={{width:'80%',margin:'10px'}} ></CustomButton>
+            <br/><br/>
+            <Visualizer url={props.pdf} style={{top:40}}   scale={state.scale}
+                 
+                    mode = {state.mode} setState = {setState}
+                    ></Visualizer>
+            
+                
+                    
 
 
-                            <CustomButton text="Reject" onClick={handleReject} style={{width:'80%',margin:'10px'}}></CustomButton>
-                            </div>
-                        </Grid>
-                </Grid>)}
-
-
-            </Grid>
-          </SignatureContext.Provider>
+          
+          </SignatureContext.Provider>  
 
     );
 }

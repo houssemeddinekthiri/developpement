@@ -184,68 +184,133 @@ export default function Pdf(props) {
             setName(e.target.files[0].name);
         }
     }
-    return (
+    const sidebarStyles = {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '300px',
+        padding: '20px',
+        background: '#f0f0f0',
+      };
 
-        <React.Fragment  >
 
-            <div style={{ width: '100%', textAlign: 'center' }}>
+
+      const [pageNumber, setPageNumber] = useState(1); // New state variable to store the page number
+
+  // ... (existing code)
+
+  // Function to handle the input field value change
+  const handlePageNumberChange = (event) => {
+    const newPageNumber = parseInt(event.target.value); // Convert the input string to an integer
+    setPageNumber(newPageNumber); // Set the new page number in the states
+  };
+
+  // Function to navigate to the entered page number when the "Go to page" button is clicked
+  const goToPage = () => {
+    if (pageNumber >= 1 && pageNumber <= pages.length) {
+      // Ensure the entered page number is within the valid range of the PDF
+      const pdfViewer = document.getElementById('pdf-viewer');
+      if (pdfViewer) {
+        pdfViewer.scrollTo(0, (pageNumber ) * pdfViewer.clientHeight); // Scroll to the selected page
+      }
+    }
+  };
+  const centerTextStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    color: 'black', // Change the text color to blue
+    fontSize: '20px', // Change the font size to 24 pixels
+    fontWeight: 'bold', // Make the text bold
+    fontFamily: 'Arial', // Use the Arial font family
+  };
+      return (
+        <React.Fragment>
+          <div style={{ display: 'flex', height: '100vh' }}>
+      {/* Le sidebar à gauche */}
+      <div style={sidebarStyles}>
+       
+        {/* Ajouter le champ texte pour saisir le numéro de page */}
+        <Input
+          type="number"
+          placeholder="Enter page number"
+          style={{ marginBottom: '10px' }}
+          value={pageNumber} // Set the input field value from the state variable
+            onChange={handlePageNumberChange}
+        />
+        {/* Bouton pour aller à la page saisie */}
+        <Button variant="contained" color="primary"  onClick={goToPage}>
+          Go to page
+        </Button>
+        <br />
+        <h2>Fields</h2>
+        {/* Vous pouvez ajouter d'autres éléments au sidebar ici */}
+      </div>
+      {/* Ajoutez le contenu principal ici */}
+   
+    
+            {/* Le contenu principal (la PDF) à droite */}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <div style={{ width: '100%', textAlign: 'center' }}>
                 <ImageDialog setSelectedImage={setSelectedImage} setDialogMode={setDialogMode} onImageSelect={onImageSelect} dialogMode={dialogMode}></ImageDialog>
-
                 <div style={{ height: '10vh', display: 'flex', flexDirection: 'row', backgroundColor: grey[100] }}>
-                    <div style={{ fontFamily: 'sans-serif', margin: '10px', alignSelf: 'flex-start' }}>{name}
-                        <input onChange={handleFileChange} accept="pdf" style={{ display: 'none' }} id="file-upload" type="file" />
-                        <label htmlFor="file-upload">
-                            <Button variant='outlined' style={{ marginLeft: '10px' }} component="span"><Backup></Backup></Button>
-                        </label>
-                    </div>
-                    <div style={{ marginLeft: 'auto', marginTop: '8px' }}>
-
-                        <ButtonGroup    >
-
-                            <Button  onClick={sign}><FontAwesomeIcon icon={faFileSignature} /></Button>
-                            <Button  onClick={Download}><GetApp></GetApp></Button>
-
-                            <Button onClick={() => { setScale(scale + 0.1) }}><ZoomIn></ZoomIn></Button>
-                            <Button onClick={() => { setScale(scale - 0.1) }}><ZoomOut></ZoomOut></Button>
-                            <Button onClick={() => { setMode("text") }}><TextFields></TextFields></Button>
-                            <Button onClick={() => { setMode("sign"); openImageDialog() }}><InsertPhoto></InsertPhoto></Button>
-
-                        </ButtonGroup>
-                    </div>
-
+                  <div style={{ fontFamily: 'sans-serif', margin: '10px', alignSelf: 'flex-start' }}>{name}
+                    <input onChange={handleFileChange} accept="pdf" style={{ display: 'none' }} id="file-upload" type="file" />
+                    <label htmlFor="file-upload">
+                      <Button variant='outlined' style={{ marginLeft: '10px' }} component="span"><Backup></Backup></Button>
+                    </label>
+                  </div>
+                  <div style={{ marginLeft: 'auto', marginTop: '8px' }}>
+                    <ButtonGroup>
+                      <Button onClick={sign}><FontAwesomeIcon icon={faFileSignature} /></Button>
+                      <Button onClick={Download}><GetApp></GetApp></Button>
+                      <Button onClick={() => { setScale(scale + 0.1) }}><ZoomIn></ZoomIn></Button>
+                      <Button onClick={() => { setScale(scale - 0.1) }}><ZoomOut></ZoomOut></Button>
+                      <Button onClick={() => { setMode("text") }}><TextFields></TextFields></Button>
+                      <Button onClick={() => { setMode("sign"); openImageDialog() }}><InsertPhoto></InsertPhoto></Button>
+                    </ButtonGroup>
+                  </div>
                 </div>
-                <div style={{ height: '90vh', maxHeight: '90vh', overflow: 'scroll', backgroundColor: grey[100] }}>
-
-
-
-                    <div >
-
-                        {
-
-                            Array.from(
-                                new Array(pages.length),
-                                (el, index) => (
-                                    <Page
-                                        key={`page_${index + 1}`}
-                                        page={pages[index]}
-                                        scale={scale}
-                                        pageNum={index}
-                                        mode={mode}
-                                        changeMode={changeMode}
-                                        inputListChange={inputListChange}
-                                        imageListChange={imageListChange}
-                                        selectedImage={selectedImage}
-                                    />
-                                ),
-                            )
-                        }
-                    </div>
-
-                </div>
-
+              </div>
+              <div  id="pdf-viewer"
+               style={{ height: '90vh', maxHeight: '90vh', overflow: 'scroll', backgroundColor: grey[100] }}>
+                {/* Le contenu PDF reste inchangé */}
+                <div style={centerTextStyle}>
+  <b style={{ margin: '10px', alignSelf: 'center' }}>Pages number  : {pages.length}</b>
+  <br /><br />
+  {/* Rest of the content */}
+</div>
+                {/* Sidebar */}
+                <div >
+               
+        {pages.map((page, index) => (
+          
+          <div key={`page_${index + 1}`} style={{ position: "relative" }}  >
+          
+            <Page
+            
+            
+              page={page}
+              scale={scale}
+             
+              mode={mode}
+             
+              changeMode={changeMode}
+              inputListChange={inputListChange}
+              imageListChange={imageListChange}
+              selectedImage={selectedImage}
+             
+            >
+           </Page>
+           
+          </div>
+          
+        ))}
+      </div>   </div>
             </div>
-
+          </div>
         </React.Fragment>
-
-    );
-}
+      );
+    };
+    

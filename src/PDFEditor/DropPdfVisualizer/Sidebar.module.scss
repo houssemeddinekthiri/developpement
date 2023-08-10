@@ -1,0 +1,51 @@
+// Sidebar.module.scss
+
+.sidebar {
+  width: 2500px;
+  height: 100%;
+  background-color: #a58383;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+  
+  .panel {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Style the color picker container */
+  .react-color {
+    position: absolute;
+    z-index: 999;
+    top: 10px;
+    left: 120px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    padding: 10px;
+    display: none;
+  }
+  
+  /* Show the color picker when the parent element has the class 'show-color-picker' */
+  .show-color-picker .react-color {
+    display: block;
+  }
+  

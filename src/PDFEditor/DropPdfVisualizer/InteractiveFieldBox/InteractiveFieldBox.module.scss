@@ -1,0 +1,77 @@
+
+.box {
+  position: absolute;
+}
+
+/* Add your CSS styles for the empty panel here */
+.documentWrapper {
+  position: relative;
+  /* Ajoutez d'autres styles selon vos besoins */
+
+  .panel {
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    width: 500px;
+    height: 600px;
+    background-color: #882e2e;
+    padding: 10px;
+    border: 2px solid #b22e2e;
+    /* Ajoutez d'autres styles selon vos besoins */
+   
+  }
+}
+.transparentButton {
+  background-color: transparent;
+  /* Add any additional styling you want for the transparent button */
+  border: transparent;
+}
+.container {
+  position: relative;
+}
+.chrome{
+  margin-left: 50px;
+  padding-left: 5%;
+}
+.inputContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.box {
+  /* Styling for the input box */
+  padding: 5px;
+  border: 1px solid #ccc;
+  min-width: 100px;
+  height: 30px;
+}
+
+.deleteIcon {
+  /* Styling for the delete icon */
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ff0000;
+}
+.inputContainer {
+  position: relative;
+}
+
+.delete-icon {
+  position: absolute;
+  top: -15px;
+  right: 0;
+  cursor: pointer;
+  color: #ff0000;
+  z-index: 1;
+}
+.ll{
+  background-color: #ffffff;
+}
+.resizableSignature {
+  border: 1px solid #ccc;
+  padding: 8px;
+  display: inline-block;
+}

@@ -18,8 +18,6 @@ import ExitToApp from '@material-ui/icons/ExitToApp';
 import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@material-ui/core';
 import axios from 'axios';
 import CONSTS from './constants';
-import image from './assets/images/LOGO.png'
-
 import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -105,8 +103,7 @@ export default function NavBar(props) {
       <AppBar color="primary" className={classes.appBar} position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-           
-          <img className="logo"  src={image} />
+          docSmart
           </Typography>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/')}>Home</Button>
           <Button className={classes.navItem} color="inherit"  onClick={()=>history.push('/add/new')}>add Document</Button>

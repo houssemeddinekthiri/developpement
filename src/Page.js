@@ -3,7 +3,7 @@ import { makeStyles, TextareaAutosize } from '@material-ui/core';
 import DraggableImage from './DraggableImage';
 
 
-export default function Page(props) {
+export default function Page(props , children) {
 
     const divRef = useRef(null);
     const canvasRef = useRef(null);
@@ -69,7 +69,7 @@ export default function Page(props) {
                 <canvas onClick={canvasClick} className={classes.root,"__page"+props.pageNum} ref={canvasRef} />
                 {
                     images.map((image,id)=>{
-                      return  (<DraggableImage key={id} id={id} imageDelete= {imageDelete} imageChange={imageChange} pageNum = {props.pageNum} image={image}></DraggableImage>)
+                      return  (<DraggableImage key={id} id={id} imageDelete= {imageDelete} imageChange={imageChange}  onDragStart={(e) => e.preventDefault()} pageNum = {props.pageNum} image={image}> {children}</DraggableImage>)
                     })
                 }
             </div>

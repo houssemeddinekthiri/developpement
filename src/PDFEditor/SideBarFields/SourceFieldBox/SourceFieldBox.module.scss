@@ -1,0 +1,42 @@
+/* components/SourceFieldBox.module.scss */
+
+.box {
+  background-color: #a34040;
+  border: 1px solid #fffafa;
+  padding: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  color:whitesmoke;
+
+  &:hover {
+    background-color: #302323;
+  }
+}
+
+/* Styling for the hovered state */
+.hovered {
+  background-color: #714242;
+}
+/* SourceFieldBox.css */
+
+.source-field-container {
+  /* Ajoutez des styles au conteneur si nécessaire */
+}
+
+.btn-pdf-custom {
+  background-color: #007bff; /* Couleur de fond */
+  color: #fff; /* Couleur du texte */
+  border: none; /* Supprimez les bordures */
+  padding: 8px 16px; /* Espacement intérieur */
+  border-radius: 4px; /* Coins arrondis */
+  cursor: pointer; /* Curseur de la souris */
+  transition: background-color 0.3s ease; /* Transition fluide */
+}
+
+.btn-pdf-custom:hover {
+  background-color: #0056b3; /* Couleur de fond au survol */
+}

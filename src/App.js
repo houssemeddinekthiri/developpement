@@ -6,6 +6,9 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend'; // or any other backend you prefer
+
 import NavBar from './Navbar';
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
@@ -22,7 +25,7 @@ import Experiment from './Experiment';
 import Pdf from './EditorPdf'
 import samplePDF from './sample.pdf'
 import Report from './Report';
-import SignupPage from './Signup'
+
 const THEME = createMuiTheme({
 
 });
@@ -35,8 +38,8 @@ function App() {
 
   const isLoggedIn = () => {
     if (Cookies.get('id') === null || Cookies.get('id') === undefined) return false;
-  
-    return (Cookies.get('email') && Cookies.get('name') );
+    let user = JSON.parse(window.atob(Cookies.get('id')));
+    return (Cookies.get('email') && Cookies.get('name') && user && user.email === Cookies.get('email') && user.name === Cookies.get('name'));
   }
   const protectRoute = (Component) => () => {
     return isLoggedIn() ? ( Component) : (<Redirect to='/login'></Redirect>)
@@ -46,8 +49,6 @@ function App() {
 
     <Router>
       <Switch>
-      <Route exact path="/signup" component={SignupPage} ></Route>
-   
         <Route path='/login' render={() => { return !isLoggedIn() ? (<> <LoginPage></LoginPage> </>) : (<Redirect to='/'></Redirect>) }}></Route>
         <Route exact path="/add/:fileID" render={protectRoute(
           <>
@@ -55,7 +56,7 @@ function App() {
             <WorkFlowStepper></WorkFlowStepper>
           </>
         )}></Route>
- 
+
         <Route exact path="/status" render={protectRoute(
           <>
             <NavBar></NavBar>
@@ -63,9 +64,9 @@ function App() {
           </>
         )}></Route>
 
-         <Route exact path="/doc/:fileId" render={protectRoute(
+ <Route exact path="/doc/:fileId" render={protectRoute(
           <>
-            <Document></Document>
+         <Document></Document>
           </>
         )}></Route>
         <Route exact path="/sig" render={protectRoute(
