@@ -46,7 +46,7 @@ export default function Pdf(props) {
           }, '');
         let base64String = btoa(STRING_CHAR);
           return 'data:image/png;base64, '+base64String;
-    
+
       }
     useEffect(() => {
 
@@ -55,7 +55,7 @@ export default function Pdf(props) {
             {
               setOwner(true);
             }
-               
+
 
 
 
@@ -124,7 +124,7 @@ export default function Pdf(props) {
             );
         })
     }
-    
+
     const handleSign = ()=>{
         setLoader(true);
         axios.post('/api/documents/'+localStorage.getItem('current_id')+'/sign',{modifications:images,scale:state.scale},{withCredentials:true}).then(
@@ -157,7 +157,7 @@ export default function Pdf(props) {
        let data  =toArrayBuffer(props.pdf.data);
        fileDownload(data,'signed.pdf');
        setLoader(false);
-  
+
    }
    const history= useHistory();
    const setSigningMode = ()=>{
@@ -182,7 +182,7 @@ export default function Pdf(props) {
                      {(owner && !props.isOwnerSigner) || props.signed ? (<></>) : (
                          <>
                         <Button color="inherit" onClick={() => { setState({ open: false }) }} ><CreateIcon></CreateIcon></Button>
-                     
+
                         <Button color="inherit" onClick={() => { setSigningMode() }} ><FontAwesomeIcon icon={faPenNib} size='lg'></FontAwesomeIcon></Button>
                         </>
                      )}
@@ -207,14 +207,14 @@ export default function Pdf(props) {
 
                     <Comments open={state.open} setState={setState}></Comments>
                 </Grid>) : (
-                
+
                     <Grid item xs={3} justify='center' alignItems='center'>
                     <Grid container style={{width:'100%',height:'100%'}} justify='center' alignItems='center'>
 
                             <div >
 
                             <CustomButton text="Sign" onClick={handleSign} style={{width:'80%',margin:'10px'}} ></CustomButton>
-                      
+
 
                             <CustomButton text="Reject" onClick={handleReject} style={{width:'80%',margin:'10px'}}></CustomButton>
                             </div>
@@ -223,7 +223,7 @@ export default function Pdf(props) {
 
 
             </Grid>
-          </SignatureContext.Provider>  
+          </SignatureContext.Provider>
 
     );
 }
