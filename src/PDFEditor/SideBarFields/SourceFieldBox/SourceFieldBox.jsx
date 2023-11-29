@@ -5,7 +5,7 @@ import { ItemTypes } from '../../ItemTypes';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import './SourceFieldBox.css'; // Importez le fichier de styles CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen , faUser ,faBuilding , faSignature , faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPen , faUser ,faBuilding , faSignature , faCalendarAlt , faStamp } from '@fortawesome/free-solid-svg-icons';
 import '../../../input.css'
 const SourceFieldBox = ({ field, className }) => {
   const [{ isDragging }, dragRef, preview] = useDrag(() => ({
@@ -14,7 +14,7 @@ const SourceFieldBox = ({ field, className }) => {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
       handlerId: monitor.getHandlerId(),
-      
+
     }),
   }));
 
@@ -40,7 +40,9 @@ const [icone , setIcone]=useState(null)
   if(field.data==='Date'){
     setIcone(faCalendarAlt)
   }
- 
+  if(field.data==="Tampon d'entreprise"){
+    setIcone(faStamp)
+  }
 
   }, []); // eslint-disable-line
 
@@ -49,16 +51,17 @@ const [icone , setIcone]=useState(null)
       <div >
         <div className="user-input-container">
           {/* Utilisez la classe CSS personnalisée sur le bouton */}
-<div> <button
+<div> 
+  <button
             id="editorInk"
           style={{backgroundColor:'transparent' , border:'transparent'}}
             aria-checked="false"
           // Appliquez l'opacité définie
           >
-          
+
             <FieldBox
               ref={dragRef}
-           
+
               label={field.data}
             />
           </button></div>

@@ -14,7 +14,7 @@ export default function HomePage() {
         axios.get('/api/users/frontpageanalytics').then(
             (data)=>{
                setState(data.data);
-            },  
+            },
             (err)=>{
                 console.log(err);
             }
@@ -100,12 +100,12 @@ export default function HomePage() {
 
         }
     }))
-  
+
     const history = useHistory();
     const classes = useStyles();
     return (
         <React.Fragment>
-          
+
             <Grid container justify='space-around' style={{ justifyContent: 'center' }}  >
                 <Grid onClick={() => {history.push('/sig') }} item xs={10} sm={4} md={2} style={{
                     backgroundColor: '#6b5b95', margin: '5px', color: 'white', fontFamily: 'poppins', cursor: 'pointer'
@@ -114,9 +114,24 @@ export default function HomePage() {
 
                         <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Manage Your</Typography>
                     </div>
+
                     <div>
 
                         <Typography variant='h5' style={{ padding: '15px', fontFamily: 'Dancing Script ,cursive', fontWeight: 'bold' }} >Signature</Typography>
+                    </div>
+
+                </Grid>
+                <Grid onClick={() => {history.push('/tampon') }} item xs={10} sm={4} md={2} style={{
+                    backgroundColor: '#FF4500', margin: '5px', color: 'white', fontFamily: 'poppins', cursor: 'pointer'
+                }}>
+                    <div style={{ height: '15vh' }}>
+
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'poppins', fontWeight: 'bold' }}>Manage Your</Typography>
+                    </div>
+
+                    <div>
+
+                        <Typography variant='h5' style={{ padding: '15px', fontFamily: 'Dancing Script ,cursive', fontWeight: 'bold' }} >Buffer</Typography>
                     </div>
 
                 </Grid>

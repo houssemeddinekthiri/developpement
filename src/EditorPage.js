@@ -56,10 +56,10 @@ export default function Page(props) {
 
 
     }, [props.scale]);
-    useEffect(()=>{ 
+    useEffect(()=>{
         setFontSize(props.fontSize);
     },[props.fontSize])
-    useEffect(()=>{ 
+    useEffect(()=>{
         setSelectedImage(props.selectedImage);
     },[props.selectedImage])
     const addInput = (e) => {
@@ -69,7 +69,7 @@ export default function Page(props) {
         props.inputListChange(props.pageNum,List);
 
     }
-   
+
     const inputChange = (id, txt) => {
         let inpList = inputList;
 
@@ -119,7 +119,7 @@ export default function Page(props) {
         setImageList(imgList);
         props.imageListChange(props.pageNum,imgList);
 
-        
+
     }
     const handleClick = (e) => {
         if (props.mode == "text")
@@ -129,7 +129,7 @@ export default function Page(props) {
                 addImage(e);
                 props.changeMode("none");
             }
-           
+
         }
 
 
@@ -171,9 +171,9 @@ export default function Page(props) {
                         new Array(inputList.length),
                         (e, i) => (
                             (<DraggableInput key={inputList[i].id}
-                              id={inputList[i].id} x={inputList[i].x} y={inputList[i].y} handleFontChange={handleFontChange} 
-                              text={inputList[i].text} canvasRef={canvasRef} positionChange={positionChange} 
-                              inputChange={inputChange} fontSize={inputList[i].fontSize} 
+                              id={inputList[i].id} x={inputList[i].x} y={inputList[i].y} handleFontChange={handleFontChange}
+                              text={inputList[i].text} canvasRef={canvasRef} positionChange={positionChange}
+                              inputChange={inputChange} fontSize={inputList[i].fontSize}
                               fontStyle={inputList[i].fontStyle} fontWeight={inputList[i].fontWeight}
                               inputDelete={inputDelete} pageNum={props.pageNum} />)
 

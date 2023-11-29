@@ -18,7 +18,7 @@
     padding: 10px;
     border: 2px solid #b22e2e;
     /* Ajoutez d'autres styles selon vos besoins */
-   
+
   }
 }
 .transparentButton {
@@ -74,4 +74,55 @@
   border: 1px solid #ccc;
   padding: 8px;
   display: inline-block;
+}
+.blueFrame {
+  border: 2px solid rgb(66, 68, 202) !important;
+  background-color: rgb(221, 231, 240);
+}
+/* styles.css */
+
+/* Stylise la zone redimensionnable */
+.resizable-frame {
+  position: relative;
+  border: 0px dashed #3498db;
+  cursor: grab;
+}
+
+/* Applique un cadre bleu lorsque l'input est en focus */
+.resizable-frame.blue-frame {
+  border-color: #2980b9;
+}
+
+/* Stylise l'input à l'intérieur de la zone redimensionnable */
+.resizable-frame .box {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  resize: none;
+  background-color: transparent;
+}
+.container {
+  height: calc(100vh - 50px);
+  padding: 20px;
+}
+
+.draggable {
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.uk-button,
+.uk-input,
+.uk-textarea,
+.uk-checkbox {
+  margin-bottom: 10px;
+  user-select: none;
+}
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

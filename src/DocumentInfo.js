@@ -10,7 +10,8 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
-
+import Pdf from "./Pdf";
+import Document from "./Document";
 import {
   Typography,
   Box,
@@ -124,7 +125,7 @@ export default function DocumentInfo(props) {
 
              <PerfectScrollbar>
              <BasicTimeline timeline={props.document.timeline}></BasicTimeline>
-               </PerfectScrollbar> 
+               </PerfectScrollbar>
             </Grid>
           </Grid>
 
@@ -138,12 +139,14 @@ export default function DocumentInfo(props) {
             <></>
           )
           }
-       
+
           <CustomButton text="Back" onClick={props.handleClose} >
             Back
           </CustomButton>
         { !props.verify ?
           (<CustomButton text="Open Document" onClick={() => { history.push('/doc/' + props.document._id) }}  >
+
+
           Open Document
         </CustomButton>)  :
         (<></>)

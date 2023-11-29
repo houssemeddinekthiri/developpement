@@ -9,7 +9,8 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import ComputerIcon from '@material-ui/icons/Computer';
 import CustomButton from './CustomButton';
 import { useHistory } from 'react-router';
-
+import Cookies from 'js-cookie';
+import { FormControlLabel, Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles({
   input: {
@@ -27,6 +28,7 @@ function UploadFromSystem(props) {
     props.setFile(event.target.files[0]);
     props.setDocument(event.target.files[0]);
   };
+
   const classes = useStyles();
 
   return (
@@ -84,7 +86,7 @@ function UploadFromDrive(props) {
           <CustomButton text="Upload From Drive" icon={CloudUploadIcon}></CustomButton>
         </div>
       </GoogleChooser>
- 
+
 
 
 
@@ -138,37 +140,61 @@ export default function DocumentUpload(props) {
     // setFile(fileData);
 
   }
+  const [selectedOption, setSelectedOption] = useState('Only Me'); // Step 2
+
+  const handleCheckboxChange = (event) => {
+    setSelectedOption(event.target.value); // Step 3
+  };
 
   const handleChange = (e) => {
     setState({ ...state, [e.target.id]: e.target.value });
   }
-
-  const upload = () => {
+const[id , setID]=useState('');
+  const upload = async () => { // Déclarez la fonction comme async
     const formData = new FormData();
     formData.append(
       "doc",
       state.file,
       state.name,
     );
-
+    const allPositions = [];
     formData.append('description', state.description);
     setState({ ...state, loader: true });
+    const currentDate = new Date();
+const fiveDaysLater = new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000);
 
-    axios.post("/api/documents", formData, { withCredentials: true }).then(
+    const signerr = {
+      email: Cookies.get('email'),
+      name: Cookies.get('name'),
+      image:Cookies.get('image'),
+      deadline:fiveDaysLater,
+      order: 0
+    };
 
-      data => {
-        props.setFileID(data.data);
-        setState({ ...state, loader: true });
-        window.location.replace(data.data._id);
-        
-      },
-      err => {
 
-        console.log(err);
+    allPositions.push(signerr);
 
+    try {
+      const response = await axios.post("/api/documents", formData, { withCredentials: true });
+      const data = response.data;
+
+      props.setFileID(data);
+      setState({ ...state, loader: true });
+console.log("emaill:"+Cookies.get('image'))
+      if (selectedOption === 'Only Me') {
+        console.log("emaik:"+localStorage.getItem('user'))
+        await axios.post(`/api/documents/${data._id}/Add_signers`, { signers: allPositions });
+        setID(data._id)
+        history.push('/doc/' + data._id);
+
+      } else {
+        window.location.replace(data._id);
       }
-    );
+    } catch (error) {
+      console.error(error);
+    }
   }
+
   const buttonDisabled = () => {
     return (state.name == null || state.name.trim() == '')
   }
@@ -189,12 +215,13 @@ export default function DocumentUpload(props) {
             <UploadFromDrive setDocument={setDocument} onSelect={onSelect} setFile={props.setFile}></UploadFromDrive>
           </Grid>
 
+
         </Grid>
 
 
       ) : (
 
-        <Grid className={classes.grid} container spacing={3}
+        <Grid className={classes.grid} container spacing={2}
         >
           <Grid item xs={12}>
             <TextField style={{ width: "100%" }}
@@ -222,7 +249,34 @@ export default function DocumentUpload(props) {
             />
 
           </Grid>
+         &nbsp;&nbsp;&nbsp; <Grid item xs={12} container spacing={2}><h4  style={{fontFamily:'cursive'}}>Who will sign this document?   &nbsp;&nbsp;     </h4>&nbsp;&nbsp;<br/>
+</Grid>
+          <Grid item xs={12} container spacing={2}>
 
+        <br/>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedOption === 'Only Me'}
+                onChange={handleCheckboxChange}
+                value="Only Me"
+              />
+            }
+            label="Only Me"
+          />
+</Grid>
+    <Grid item xs={12} container spacing={2}>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;   <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedOption === 'Several People'}
+                onChange={handleCheckboxChange}
+                value="Several People"
+              />
+
+            }
+            label="Several People"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Grid>
           <Grid item xs={12} style={{ textAlign: 'center' }}>
 
             <CustomButton text="Upload" icon={CloudUploadIcon} onClick={upload} disabled={buttonDisabled()}></CustomButton>

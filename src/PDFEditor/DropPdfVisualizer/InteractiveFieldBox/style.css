@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600&display=swap");
+
+html,
+body,
+#root {
+  font-family: "Open Sans", sans-serif;
+  position: static;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  color: #333;
+  letter-spacing: 1px;
+  background: lightblue;
+  font-weight: 300;
+}
+
+.parent {
+  width: 300px;
+  height: 600px;
+  background-color: white;
+  margin: 20px;
+}
+
+.target {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 0px;
+  left: 0px;
+  line-height: 1.5em;
+  text-align: center;
+  border: 1px solid #333;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: lightgray;
+}

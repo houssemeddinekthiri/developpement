@@ -38,7 +38,7 @@ export default function GoogleSignin() {
     const classes = useStyles();
     const href = "http://localhost:3001/auth/google"
     return (
-      
+
         <div className={classes.root}>
             <div className={classes.imageDiv}>
                 <img className={classes.img} src={gicon}></img>

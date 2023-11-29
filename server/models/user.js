@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     password: String,
     signature:Buffer,
     imageSignature:Buffer,
+    TamponImage:Buffer,
     defaultSignature:{type:Number,default:0},
     publicKeys:[String],
     encryptedPrivateKey:String,

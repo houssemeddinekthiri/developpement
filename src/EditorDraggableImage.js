@@ -10,7 +10,7 @@ const DraggableImage = props => {
   const imgRef = useRef(null);
   const [x, setx] = useState(props.imageData.x);
   const [y, sety] = useState(props.imageData.y);
-  
+
   const [Imagewidth, setImageWidth] = useState(props.imageData.width);
   const [Imageheight, setImageHeight] = useState(props.imageData.height);
   const [open,setOpen] = useState(false);

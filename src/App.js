@@ -25,7 +25,9 @@ import Experiment from './Experiment';
 import Pdf from './EditorPdf'
 import samplePDF from './sample.pdf'
 import Report from './Report';
-
+import TamponTabls from './TamponTabls';
+import AjoutComposonSPdf from './AjoutComposonsPdf';
+import DocumentSign from './DocumentSign';
 const THEME = createMuiTheme({
 
 });
@@ -69,10 +71,23 @@ function App() {
          <Document></Document>
           </>
         )}></Route>
+        <Route exact path="/docc/:fileId" render={protectRoute(
+          <>
+         <DocumentSign></DocumentSign>
+          </>
+        )}></Route>
         <Route exact path="/sig" render={protectRoute(
           <>
             <NavBar></NavBar>
             <SignatureTabs></SignatureTabs>
+            {/* <SignatureBox></SignatureBox> */}
+          </>
+        )}></Route>
+
+<Route exact path="/tampon" render={protectRoute(
+          <>
+            <NavBar></NavBar>
+            <TamponTabls></TamponTabls>
             {/* <SignatureBox></SignatureBox> */}
           </>
         )}></Route>
@@ -94,6 +109,13 @@ function App() {
           <>
             <NavBar></NavBar>
             <Report></Report>
+          </>
+        )}>
+        </Route>
+        <Route exact path="/PdfAjout" render={protectRoute(
+          <>
+            <NavBar></NavBar>
+            <AjoutComposonSPdf></AjoutComposonSPdf>
           </>
         )}>
         </Route>

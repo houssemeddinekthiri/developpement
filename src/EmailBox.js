@@ -42,7 +42,7 @@ export default function EmailBox(props) {
 
     return (
         <React.Fragment>
-            
+
             <Grid container style={{ alignContent: 'center', justifyContent: 'center', margin: 'auto', width: '50vw', height: 'auto', backgroundColor: grey[10], padding: '30px', boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px' }}>
                 <Grid item xs={12} style={{ textAlign: 'center' }} >
                     <TextField

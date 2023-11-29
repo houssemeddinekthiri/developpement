@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'; // Import useEffect from 'react'
 import AuthorsideBar from './SideBarFields/AnotherSideBar'
 import styles from '../PDFEditor/DropPdfVisualizer/InteractiveFieldBox/';
 import InteractiveFieldBox from './DropPdfVisualizer/InteractiveFieldBox/InteractiveFieldBox';
+import Modal from './DropPdfVisualizer/InteractiveFieldBox/Modal';
 const DEFAULT_FIELDS = {
   hourly: [
     {
@@ -13,11 +14,7 @@ const DEFAULT_FIELDS = {
       type: 'hourly',
       data: 'Nom',
     },
-    {
-      id: '002',
-      type: 'hourly',
-      data: 'Prenom',
-    },
+
     {
       id: '003',
       type: 'hourly',
@@ -28,13 +25,19 @@ const DEFAULT_FIELDS = {
       type: 'hourly',
       data: 'Date',
     },
-    
+
+
   ],
   docusign: [
     {
       id: '101',
       type: 'docusign',
       data: 'signature',
+    },
+    {
+      id: '005',
+      type: 'hourly',
+      data: "Tampon d'entreprise",
     },
   ],
 };
@@ -45,23 +48,17 @@ const DEFAULT_FIELDSS = {
       type: 'hourly',
       data: 'Date',
     },
-  
-    
+
+
   ],
- 
+
 };
 
-function PDFEditor({ url  , showPanel , setShowPanel}) {
+function PDFEditor({ url  ,selectedFieldForCopy}) {
   const { pages, loading } = useDocument({ url });
   const [fieldsByPages, setFieldsByPages] = useState({});
- 
-  const handleMouseEnter = () => {
-    setSelectedField(null); // Hide the delete icon
-  };
 
-  const handleMouseLeave = () => {
-    setSelectedField(null); // Hide the delete icon
-  };
+
   const handleDropField = (field) => {
     setFieldsByPages((currentFields) => ({
       ...currentFields,
@@ -101,53 +98,74 @@ function PDFEditor({ url  , showPanel , setShowPanel}) {
 
 
   // Function to handle color selection from the color picker
-  const sidebarStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '300px',
-    padding: '20px',
-    background: '#f0f0f0',
-  };
+
   const [selectedField, setSelectedField] = useState(null);
   const [selectedFieldPanel, setSelectedFieldPanel] = useState(null);
 
-  const handleShowPanel = (field) => {
-    setSelectedField(field);
-    setSelectedFieldPanel(field); // Mettre à jour l'état pour afficher le panneau dans le volet latéral
-  };
-  const [selectedDropper, setSelectedDropper] = useState(null);
 
-  const handleDropperClick = (dropper) => {
-    setSelectedDropper(dropper);
+  const handleApplyClick = (selectedOption) => {
+    if (selectedOption === 'last') {
+      const lastPageIndex = pages.length - 1;
+      const updatedFieldsByPages = { ...fieldsByPages };
+
+      // Mettez à jour les coordonnées du champ
+      const fieldToUpdate = selectedFieldForCopy;
+      fieldToUpdate.page = lastPageIndex;
+      fieldToUpdate.top = 100; // Mettez à jour la valeur appropriée pour le top
+      fieldToUpdate.left = 100; // Mettez à jour la valeur appropriée pour le left
+
+      // Ajoutez le champ mis à jour à la dernière page
+      updatedFieldsByPages[lastPageIndex] = {
+        ...updatedFieldsByPages[lastPageIndex],
+        [fieldToUpdate._id]: fieldToUpdate,
+      };
+
+      setFieldsByPages(updatedFieldsByPages);
+    }
+
+  };
+
+
+  const handleCopyToAllPages = (content) => {
+    const lastPageIndex = pages.length ;
+    const updatedFieldsByPages = { ...fieldsByPages };
+
+    for (let fieldId in updatedFieldsByPages[lastPageIndex]) {
+      updatedFieldsByPages[lastPageIndex][fieldId].data = content;
+    }
+
+    setFieldsByPages(updatedFieldsByPages);
   };
 
   return (
     <PlaygroundContainer>
- 
- 
-      
-     <DropPdfVisualizer
+
+
+
+<DropPdfVisualizer
         pages={pages}
         fieldsByPages={fieldsByPages}
         loading={loading}
         onDropField={handleDropField}
         selectedField={selectedField}
         setSelectedField={setSelectedField}
-        handleShowPanel={handleShowPanel} 
+        applyToAllPages={handleCopyToAllPages}
+        setFieldsByPages={setFieldsByPages}
       />
+<Modal  applyToAllPages={handleCopyToAllPages}>
 
+
+</Modal>
       <SideBarFields
         fieldGroups={DEFAULT_FIELDS}
-        fieldGroupss={DEFAULT_FIELDSS}
         fieldsByPages={fieldsByPages}
-        handleShowPanel={handleShowPanel}
-        selectedField={selectedFieldPanel}
-        /* ... autres props ... */
+        selectedField={selectedField}
+        setSelectedField={setSelectedField}
       />
-      
+
     </PlaygroundContainer>
   );
-  
+
 }
 
 export default PDFEditor;

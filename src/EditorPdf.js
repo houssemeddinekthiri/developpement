@@ -29,14 +29,14 @@ export default function Pdf(props) {
         root: {
             backgroundImage: props.disabled===true ? 'none' :  CONSTS.backgroundImage,
             color: 'white',
-           
-           
+
+
         },
         label: {
-          
+
         },
     });
-    
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -173,7 +173,7 @@ export default function Pdf(props) {
     const Download = () => {
         async function modifyPdf() {
             const pdfBytes = await (await fetch(props.pdf)).arrayBuffer();
-            
+
             fileDownload(pdfBytes, name);
         }
         modifyPdf();
@@ -194,23 +194,20 @@ export default function Pdf(props) {
 
 
 
-      const [pageNumber, setPageNumber] = useState(1); // New state variable to store the page number
+      const [pageNumber, setPageNumber] = useState(1);
 
-  // ... (existing code)
 
-  // Function to handle the input field value change
   const handlePageNumberChange = (event) => {
-    const newPageNumber = parseInt(event.target.value); // Convert the input string to an integer
-    setPageNumber(newPageNumber); // Set the new page number in the states
+    const newPageNumber = parseInt(event.target.value);
+    setPageNumber(newPageNumber);
   };
 
-  // Function to navigate to the entered page number when the "Go to page" button is clicked
   const goToPage = () => {
     if (pageNumber >= 1 && pageNumber <= pages.length) {
-      // Ensure the entered page number is within the valid range of the PDF
+
       const pdfViewer = document.getElementById('pdf-viewer');
       if (pdfViewer) {
-        pdfViewer.scrollTo(0, (pageNumber ) * pdfViewer.clientHeight); // Scroll to the selected page
+        pdfViewer.scrollTo(0, (pageNumber ) * pdfViewer.clientHeight);
       }
     }
   };
@@ -230,7 +227,7 @@ export default function Pdf(props) {
           <div style={{ display: 'flex', height: '100vh' }}>
       {/* Le sidebar à gauche */}
       <div style={sidebarStyles}>
-       
+
         {/* Ajouter le champ texte pour saisir le numéro de page */}
         <Input
           type="number"
@@ -248,8 +245,8 @@ export default function Pdf(props) {
         {/* Vous pouvez ajouter d'autres éléments au sidebar ici */}
       </div>
       {/* Ajoutez le contenu principal ici */}
-   
-    
+
+
             {/* Le contenu principal (la PDF) à droite */}
             <div style={{ flex: 1, overflow: 'hidden' }}>
               <div style={{ width: '100%', textAlign: 'center' }}>
@@ -283,29 +280,29 @@ export default function Pdf(props) {
 </div>
                 {/* Sidebar */}
                 <div >
-               
+
         {pages.map((page, index) => (
-          
+
           <div key={`page_${index + 1}`} style={{ position: "relative" }}  >
-          
+
             <Page
-            
-            
+
+
               page={page}
               scale={scale}
-             
+
               mode={mode}
-             
+
               changeMode={changeMode}
               inputListChange={inputListChange}
               imageListChange={imageListChange}
               selectedImage={selectedImage}
-             
+
             >
            </Page>
-           
+
           </div>
-          
+
         ))}
       </div>   </div>
             </div>
@@ -313,4 +310,3 @@ export default function Pdf(props) {
         </React.Fragment>
       );
     };
-    

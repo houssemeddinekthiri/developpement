@@ -24,15 +24,30 @@ const documentSchema = new mongoose.Schema(
             enum: ['signed', 'waiting', 'rejected', 'expired'],
             default: 'waiting'
           },
+          documentSigné: { type: Buffer , default:null },
           deadline: { type: Date, default: Date.now() },
           order: Number
         }
       ],
+
+
     status: {
       type: String,
       enum: ['uploaded','added_signers', 'sent'],
       default: 'uploaded'
     },
+    positions: [
+      {
+        page: Number,
+        elementId: String,
+        typee:String,
+        x: Number,
+        y: Number,
+      },
+    ],
+
+
+
     comments:
       [
         {
@@ -44,6 +59,7 @@ const documentSchema = new mongoose.Schema(
         }
       ],
     buffer: { type: Buffer },
+    documentSigné: { type: Buffer },
     timeline: [
       {
         action: {

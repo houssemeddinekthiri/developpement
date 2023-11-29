@@ -2,19 +2,22 @@
 import React, { useState } from 'react';
 import DropPage from './DropPage';
 import styles from './DropPdfVisualizer.module.scss';
+import Modal from './InteractiveFieldBox/Modal';
 import { ChromePicker } from 'react-color'; // Import ChromePicker from react-color
-function DropPdfVisualizer({ pages, fieldsByPages, loading, onDropField, setFieldsByPages, }) {
+
+function DropPdfVisualizer({ pages, fieldsByPages, loading, onDropField, setFieldsByPages, applyToAllPages}) {
   const [editingField, setEditingField] = useState(null);
-  const [selectedField, setSelectedField] = useState(null); // Ajout de l'état selectedField
-  const [selectedColor, setSelectedColor] = useState('#000000'); // Set a default color
-  const [isPanelVisible, setIsPanelVisible] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedFieldForCopy, setSelectedFieldForCopy] = useState(null);
+
   const handleInputEdit = (field) => {
     setEditingField(field);
   };
+  const [copiedContent, setCopiedContent] = useState(null);
 
-  const handleClearSelectedField = () => {
-    setSelectedField(null);
-  };
+
+  const [contentToCopy, setContentToCopy] = useState('');
+
 
   if (loading) {
     return 'LOADING...';
@@ -36,35 +39,58 @@ function DropPdfVisualizer({ pages, fieldsByPages, loading, onDropField, setFiel
     }
   };
   // Function to handle color selection from the color picker
-  const handleColorChange = (color) => {
-    setSelectedColor(color.hex); // Update the selected color
-  };
- 
 
-  const handleInputHover = () => {
-    setIsPanelVisible(true);
+
+
+  const handleCopyToAllPages = () => {
+    if (copiedContent) {
+      const updatedFieldsByPages = { ...fieldsByPages };
+
+      for (const pageIndex in updatedFieldsByPages) {
+        const newFieldId = `00${pageIndex}${Object.keys(updatedFieldsByPages[pageIndex]).length}`;
+        const lastField = Object.values(updatedFieldsByPages[pageIndex]).pop();
+
+        updatedFieldsByPages[pageIndex] = {
+          ...updatedFieldsByPages[pageIndex],
+          [newFieldId]: {
+            ...lastField,
+            _id: newFieldId,
+            page: parseInt(pageIndex),
+            top: lastField.top + 50, // Adjust as needed
+            left: lastField.left + 50, // Adjust as needed
+            data: copiedContent,
+          },
+        };
+      }
+
+      setFieldsByPages(updatedFieldsByPages);
+    }
   };
-  const handleShowPanel = (field) => {
-    setSelectedField(field);
-    setIsPanelVisible(true);
-  };
+
+
+
   return (
     <div className={styles.documentWrapper}>
-      {pages.map(({ dataUrl, width, height }, page) => (
-        <DropPage
-          key={page}
-          page={page}
-          src={dataUrl}
-          width={width}
-          height={height}
-          fields={fieldsByPages[page] ?? {}}
-          onDropField={onDropField}
-          handleInputEdit={handleInputEdit}
-          onDeleteField={handleInputDelete}
-        />
-        
-      ))}
-      
+    {pages.map(({ dataUrl, width, height }, page) => (
+      <DropPage
+      key={page}
+      page={page}
+      src={dataUrl}
+      width={width}
+      height={height}
+      content={contentToCopy}
+      fields={fieldsByPages[page] ?? {}}
+      onDropField={onDropField}
+      handleInputEdit={handleInputEdit}
+      fieldsByPages={fieldsByPages} // Pass fieldsByPages
+      setFieldsByPages={setFieldsByPages}
+      handleCopyToAllPages={handleCopyToAllPages}
+
+      // Pass setFieldsByPages
+    />
+
+    ))}
+
     </div>
   );
 }

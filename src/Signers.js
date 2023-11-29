@@ -9,6 +9,7 @@ import CustomButton from './CustomButton';
 import Loader from './Loader';
 import SignerBox from './SignerBox';
 import { useParams } from 'react-router';
+import { useHistory } from 'react-router';
 import Cookies from 'js-cookie';
 
 
@@ -46,7 +47,7 @@ export default function Signers(props) {
         // console.log(data.email);
         // if(Cookies.get('email')===data.email){
         //     setState({ ...state,alertText:'You cannot add yourself as a signer', alert: true });
-        //     return;            
+        //     return;
         // }
         if (!validateEmail(data.email)) {
             setState({ ...state,alertText:'Please Enter Valid Email', alert: true });
@@ -69,18 +70,22 @@ export default function Signers(props) {
     const handleSwap = (signers) => {
         setState({ ...state, signers: signers })
     }
+    const history = useHistory();
     const handleClose = () => {
         setState({ ...state, alert: false });
     }
     const handleSubmit = () => {
         setState({ ...state, loader: true });
+        console.log("sign:"+params.fileID)
         axios.post('../api/documents/' +params.fileID + '/signers', { signers: state.signers , sequential:state.seq}, { withCredentials: true }).then(
             (data) => {
-                props.changeState();
+
+              history.push('/docc/'+params.fileID);
                 setState({ ...state, loader: false });
             },
             (err) => {
                 setState({ ...state, loader: false });
+                console.error('Impossible de charger le PDF.');
             }
 
         )

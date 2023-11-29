@@ -1,0 +1,22 @@
+
+  .delete-icon {
+    position: relative;
+    display: inline-block;
+  }
+
+  .delete-text {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 3px 5px;
+    border-radius: 3px;
+  }
+
+  .delete-icon:hover .delete-text {
+    display: block;
+  }
+

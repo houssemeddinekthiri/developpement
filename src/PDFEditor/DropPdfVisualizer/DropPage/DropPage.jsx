@@ -1,36 +1,30 @@
 // DropPage.js
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef , useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { DocumentPage } from '../../../PDFCore';
 import InteractiveFieldBox from '../InteractiveFieldBox';
 import { ItemTypes } from '../../ItemTypes';
+import Draggable from "react-draggable";
 import MaterialIcon, {colorPalette} from 'material-icons-react';
 import SideBarFields from '../../SideBarFields/SideBarFields';
-const DropPage = ({ src, width, height, page, fields, onDropField, onEditField, onDeleteField   , setIsDoubleClick}) => {
+import Modal from '../InteractiveFieldBox/Modal';
+import Moveable from 'react-moveable';
+const DropPage = ({ src, width, height, page, fields, onDropField,content, onEditField,handleChangeInput, onDeleteField,handleCopyToAllPages ,fieldsByPages,setFieldsByPages ,moveableRef , setIsDoubleClick , selectedFieldData }) => {
   const moveBox = useCallback(
     (item, left, top) => {
       onDropField({
         ...item,
-        _id: item._id ?? `00${page}${Object.keys(fields ).length}`,
+        _id: item._id ?? `00${page}${Object.keys(fields).length}`,
         page,
         top,
         left,
       });
     },
-    [onDropField, page, fields ]
+    [onDropField, page, fields]
   );
 
 
-  const handleDeleteClickOut = () => {
-    setIsDoubleClick(false);
-  };
-  const sidebarStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '300px',
-    padding: '20px',
-    background: '#f0f0f0',
-  };
+
   const ref = useRef();
 
   const [, dropRef] = useDrop(
@@ -63,37 +57,35 @@ const DropPage = ({ src, width, height, page, fields, onDropField, onEditField, 
     }),
     [moveBox]
   );
-  
 
-  // Function to handle mouse leave and hide the delete icon
-  
+
+
   const handleDeleteField = (fieldId) => {
     onDeleteField(fieldId);
   };
 
   return (
-    <div style={{ position: 'relative' }} 
-            >
-      <DocumentPage ref={dropRef(ref)} src={src} width={width} height={height}   >
-  
+    <div style={{ position: 'relative' }} className="container"  >
+      <DocumentPage ref={dropRef(ref) } src={src} width={width} height={height}>
         {Object.values(fields).map((field) => (
-          <InteractiveFieldBox
-          
-            key={field._id}
-            field={field}
-            onEditField={onEditField}
-            onDeleteField={handleDeleteField}
-           
-          >
+         <InteractiveFieldBox
+         key={field._id}
+         field={field}
+         currentPage={page}
+         onEditField={onEditField}
+         onDeleteField={handleDeleteField}
+         setSelectedFieldData={selectedFieldData}
+         width={width}
+         height={height}
+         fieldsByPages={fieldsByPages} // Pass fieldsByPages
+         setFieldsByPages={setFieldsByPages}
+         handleCopyToAllPages={handleCopyToAllPages}
+         handleChangeInput={handleChangeInput}
 
+         // Pass setFieldsByPages
+       />
 
-       
-          </InteractiveFieldBox>
-         
         ))}
-        
-
-      
       </DocumentPage>
     </div>
   );

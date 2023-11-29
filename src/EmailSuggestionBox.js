@@ -56,11 +56,11 @@ export default function EmailSuggestionBox(props) {
                     image:null
                   });
                 }
-        
+
                 return filtered;
               }}
             renderOption={(option) => (
-                
+
                 <React.Fragment>
                     <ListItemAvatar>
                         <Avatar alt={option.name} src={option.image} />

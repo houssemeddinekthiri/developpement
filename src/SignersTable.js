@@ -41,7 +41,7 @@ export default function SignersTable(props) {
                     <ListItemText  secondary={signer.name ? signer.email:''} primary={signer.name ? signer.name : signer.email} />
                 </ListItem>,
                 moment(signer.deadline).format('YYYY-MM-DD HH:mm'),
-        
+
                 <Chip
                     variant="outlined"
                     color="secondary"
@@ -51,7 +51,7 @@ export default function SignersTable(props) {
         })
         setRows(rows);
     },[])
-   
+
 
     return (
         <TableContainer component={Paper} elevation={0}>

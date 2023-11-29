@@ -20,8 +20,10 @@ export default function SignerBox(props) {
         console.log(props)
         setSequential(props.seq);
     },[props.seq])
+    const [iconClicked, setIconClicked] = useState(false);
     const handleAdd = () => {
         props.handleAdd(state);
+        setIconClicked(true)
     }
     const handleChange = (e) => {
 
@@ -45,9 +47,16 @@ export default function SignerBox(props) {
                 <Grid item xs={5} sm={1} >
                     <Fab color='secondary'  style={{backgroundImage:CONSTS.backgroundImage}} onClick={handleAdd}><PersonAddIcon></PersonAddIcon></Fab>
                 </Grid>
-              
+
                 <Grid item xs={10} sm={5} >
-                    <CustomButton text="submit" icon={SendIcon} style={{ padding: '7px' }} onClick={props.handleSubmit}></CustomButton>
+                {iconClicked && (
+          <CustomButton
+            text="submit"
+            icon={SendIcon}
+            style={{ padding: '7px' }}
+            onClick={props.handleSubmit}
+          />
+        )}
                 </Grid>
             </Grid>
 

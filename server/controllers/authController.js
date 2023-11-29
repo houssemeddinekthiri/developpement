@@ -18,17 +18,17 @@ function authorize(res) {
     scope: ["profile", "email", "https://www.googleapis.com/auth/drive.readonly"],
   });
   res.redirect(authUrl);
-    
-  
+
+
 }
 
 
 exports.google_callback =async function(req,res,next){
-  
+
     var query = { email: req.user.email },
       update = { email: req.user.email, name: req.user.name,image:req.user.image },
       options = { upsert: true, new: true, setDefaultsOnInsert: true };
-     
+
     User.findOneAndUpdate(query, update, options, function (error, result) {
       if (error) {
          res.status(500).json({message:'Server Error'});
@@ -53,13 +53,13 @@ exports.google_callback =async function(req,res,next){
         res.cookie('id', req.user.token.split('.')[1], {
           maxAge: 3600_000,
         });
-        
+
         res.redirect("http://localhost:3000");
       }
 
     });
 
-  
+
 }
 
 exports.logout = (req,res,next)=>{

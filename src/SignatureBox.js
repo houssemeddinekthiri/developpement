@@ -24,13 +24,13 @@ export default function SignatureBox(props) {
          setWidth(parentRef.current.getBoundingClientRect().width);
 
     },[props])
-    
+
 
     const handleSave  = async ()=>{
        setLoader(true);
         var buf = Buffer.from(canvasRef.toDataURL().split(',')[1], 'base64');
         let file = new File([buf],'signature.png');
-    
+
          let formData = new FormData();
          formData.append(
             "doc",
@@ -55,7 +55,7 @@ export default function SignatureBox(props) {
         <>
         <Loader open={loader}></Loader>
             <Grid container alignItems='center' justify='center' style={{ textAlign: 'center',width:'100%', marginTop: '10px', marginLeft: '0px', paddingLeft: '0px' }} >
-        
+
         <Grid item container xs={2} sm={1} lg={1} justify="flex-end" style={{backgroundColor:grey[100],borderRadius:'20px'}}>
             <Grid item xs={6} id="black" style={{margin:'10px'}} onClick={()=>setPenColor("black")} >
                 <div style={{backgroundColor:'black',width:'30px',height:'30px',borderRadius:'50%',border:(penColor=="black"? "2px solid skyblue":"none" )}}>
@@ -77,14 +77,14 @@ export default function SignatureBox(props) {
 
                 </div>
             </Grid>
-        
+
             </Grid>
             <Grid item container xs={10} sm={8} lg={8} >
-                
+
                 <div ref={parentRef} style={{ width: '100%',boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'
  }}>
-     
-{/* 
+
+{/*
                     <canvas width={width} height={300} style={{
                         boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px'
                     }} ref={canvasRef} ></canvas> */}
@@ -92,10 +92,10 @@ export default function SignatureBox(props) {
     canvasProps={{width:width,height:300,className: 'sigCanvas'}} />
                 </div>
             </Grid>
-           
-                   
 
-            
+
+
+
             <Grid item xs={8} style={{ textAlign: 'center', margin: '10px' }}>
 
             {saved ? (<Button variant="contained"  style={{
@@ -106,7 +106,7 @@ export default function SignatureBox(props) {
                                     'linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6)', fontFamily: 'poppins'
                             }} onClick={handleSave} >save or Replace</Button>
 
-                        )}  
+                        )}
 
                 <Button variant="contained" color="primary" style={{
                     margin: '5px', backgroundImage:
@@ -115,7 +115,7 @@ export default function SignatureBox(props) {
             </Grid>
 
         </Grid>
-      
+
         </>
       )
 }

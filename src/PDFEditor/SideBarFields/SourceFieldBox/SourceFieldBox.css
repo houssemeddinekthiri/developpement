@@ -11,22 +11,22 @@
     justify-items: center;
     justify-content: center;
     color:whitesmoke;
-  
+
     &:hover {
       background-color: #302323;
     }
   }
-  
+
   /* Styling for the hovered state */
   .hovered {
     background-color: #714242;
   }
   /* SourceFieldBox.css */
-  
+
   .source-field-container {
     /* Ajoutez des styles au conteneur si nécessaire */
   }
-  
+
   .btn-pdf-custom {
     background-color: #86bbcc; /* Couleur de fond */
     color: #fff; /* Couleur du texte */
@@ -36,7 +36,7 @@
     cursor: pointer; /* Curseur de la souris */
     transition: background-color 0.3s ease; /* Transition fluide */
   }
-  
+
   .btn-pdf-custom:hover {
     background-color: #0056b3; /* Couleur de fond au survol */
   }

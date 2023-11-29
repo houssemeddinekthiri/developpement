@@ -11,19 +11,34 @@ import MaterialIcon, {colorPalette} from 'material-icons-react';
 import { ChromePicker } from 'react-color'; // Import ChromePicker from react-color
 import DatePicker from 'react-datepicker'; // Import DatePicker from the appropriate library
 import 'react-datepicker/dist/react-datepicker.css';
-
-
-
-const InteractiveFieldBox = ({ field, handleInputEdit, handleShowPanel,  handleInputDelete, onDeleteField }) => {
+import ModalTampon from './ModalTampon';
+import Draggable from "react-draggable";
+import SignatureBox from '../../../SignatureBox';
+import 'react-resizable/css/styles.css'; // Assurez-vous d'importer les styles CSS de react-resizable
+import Modal from './Modal'
+import Moveable from 'react-moveable';
+import { Resizable } from 'react-resizable';
+import { ResizableBox } from 'react-resizable'; // Import ResizableBox
+import 'react-resizable/css/styles.css'; // Import the styles for ResizableBox
+import ModalSignaturre from './ModalSignature';
+import ModalText  from './ModalText';
+import SideBarFields from '../../SideBarFields/SideBarFields'
+const InteractiveFieldBox  = ({ field,currentPage, handleInputEdit,fieldsByPages,setFieldsByPages, handleShowPanel,  handleInputDelete, onDeleteField,onDragStart  , onDropField , width , height
+  }) => {
   // State to manage the button click
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const [content, setContent] = useState(field.data);
   const [contents, setContents] = useState(field.data);// State to hold the input text
   const [isEditable, setIsEditable] = useState(false); // State to manage editable property
   const [isDraggable, setIsDraggable] = useState(false); // State to manage draggable property
   const [showPanel, setShowPanel] = useState(false); // State to control the panel visibility
+  const [isBlueFrame, setIsBlueFrame] = useState(false);
+  const [frameWidth, setFrameWidth] = useState(50); // Largeur initiale du cadre
+  const [frameHeight, setFrameHeight] = useState(50); // Hauteur initiale du cadre
 
 const[showPanelSignature  , setShowPanelSignature]=useState(false);
+
   const [showPanelDate, setShowPanelDate] = useState(false); // State to control the panel visibility
   const [showD, setShowD] = useState(false); // State to control the panel visibility
   const [panelPosition, setPanelPosition] = useState({ x: 0, y: 0 }); // State to store the panel position
@@ -33,12 +48,9 @@ const[showPanelSignature  , setShowPanelSignature]=useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
  const [isPanelVisible, setIsPanelVisible] = useState(false); // Nouvel état pour la visibilité du panneau
  const [isDoubleClick, setIsDoubleClick] = useState(false);
+ const [isDoubleClickCopier, setIsDoubleClickCopier] = useState(false);
 const[selectedField , setSelectedField]=useState()
- const handleDeleteFieldd = () => {
-  onDeleteField(field._id);
-};
-  // Function to handle color selection from the color picker
-  const handleColorChange = (color) => {
+ const handleColorChange = (color) => {
     setSelectedColor(color.hex); // Update the selected color
   };
   const handleUnderlineToggle = () => {
@@ -71,97 +83,96 @@ const[selectedField , setSelectedField]=useState()
   }, []); // eslint-disable-line
 
   const opacity = isDragging ? 0.4 : 1;
-  const border = isDragging ? 'red' : 'blue'; // Change border color when dragging
-  const fontSize = isDragging ? '10px' : '15px'; // Change font size when dragging
+  const border = isDragging ? 'red' : 'blue';
+  const fontSize = isDragging ? '10px' : '15px';
 
   // Function to handle input change
   const handleInputChange = (event) => {
-    setContent(event.target.value); // Update the content state with the input text
+    setContent(event.target.value);
   };
 
-  // Function to handle double-click and make the field editable
   const handleDoubleClick = () => {
-    if(field.data==='Nom' || field.data==='Prenom' || field.data==='Entreprise'){
-    setIsEditable(!isEditable);
-    setIsDraggable(false);
+    if (field.data === 'Nom' || field.data === 'Prenom' || field.data === 'Entreprise'  ) {
+      setIsEditable(!isEditable);
+      setIsDraggable(false);
+      setSelectedField(field);
+      setIsInputFocused(true);
 
-   // handleInputEdit(field);
     }
-
   };
+
+
   const handleDateChange = (date) => {
-    // Convert the selected date to the desired format (e.g., DD/MM/YYYY)
+
     const formattedDate = formatDate(date);
 
-    // Update the content state with the formatted date
     setContent(formattedDate);
 
     // Close the date panel
     setShowPanelDate(false);
   };
-  const handlePanelClose = () => {
-    setShowPanelDate(false);
 
-  };
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
-  // Function to handle click and make the field draggable
+
 
   const handleClick = (event) => {
     event.stopPropagation();
     if (!isEditable) {
       setIsDraggable(true);
-     // const inputRect = dragRef.current.getBoundingClientRect();
-
-      // Call handleShowPanel with the selected field
 
 
     }
-    const handlePanelClose = () => {
-      setShowPanel(false);
-    };
+
   };
-  // Function to handle mouse enter and show the empty panel
+  const [openModall, setOpenModall] = useState(false);
+  const [openModalText, setOpenModalText] = useState(false);
+  const [openModalSign, setOpenModalSign] = useState(false);
   const handleMouseEnter = () => {
-    if(field.data==='Nom'   || field.data==='Prenom'  || field.data==='Entreprise'){
-    setShowPanel(true);}
+  //  if(field.data==='Nom'    || field.data==='Entreprise'){
+   // setOpenModalText(true);}
     if(field.data==='Date'){
       setShowPanelDate(true)
-    }// Afficher l'icône lorsque le curseur survole l'input
+    }
 
     if(field.data==='signature'){
-      setShowPanelSignature(true)
+      setOpenModalSign(true)
+    }
+    if(field.data==="Tampon d'entreprise"){
+      setOpenModall(true)
     }
   };
 
 
 
 
-  const [inputSize, setInputSize] = useState(15); // State to hold the input size, initialized to 15
-  const [selectedFont, setSelectedFont] = useState('Arial'); // State to hold the selected font, initialized to 'Arial'
+  const [inputSize, setInputSize] = useState(15);
+  const [selectedFont, setSelectedFont] = useState('Arial');
 
   //
   const handleFontFamilyChange = (event) => {
-    setSelectedFont(event.target.value); // Update the selected font state with the new value
+    setSelectedFont(event.target.value);
   };
   // Function to handle input size change
   const handleInputChangeSize = (event) => {
-    setInputSize(parseInt(event.target.value)); // Update the input size state with the new value
+    setInputSize(parseInt(event.target.value));
   };
 
 
   const handleMouseEnterr = () => {
     setIsDoubleClick(true);
-    setIsResizing(true)
+    setIsDoubleClickCopier(true)
 
   };
   const inputRef = useRef(null);
 
-
+const handleCopier=()=>{
+  setShowPanelDate(true)
+}
 
 
   useEffect(() => {
@@ -176,6 +187,17 @@ const[selectedField , setSelectedField]=useState()
   }, [isEditable]);
 
 
+  useEffect(() => {
+    if (isInputFocused) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isInputFocused]);
 
 
 
@@ -198,25 +220,42 @@ const[selectedField , setSelectedField]=useState()
   const handleDeleteClick = () => {
     setInputValue('');
     setShowInput(false);
- setIsDoubleClick(false)
+     setIsDoubleClick(false)
+     setIsDoubleClickCopier(false)
+     setShowPanel(false)
   };
 
   const handleDeleteClickOut = () => {
     setIsDoubleClick(false);
+    setIsDoubleClickCopier(false)
+
 
   };
+
+  const [openModal, setOpenModal] = useState(false);
+
   const handleOutsideClick = (event) => {
     if (inputRef.current && !inputRef.current.contains(event.target) && !deleteIconClicked) {
       setIsEditable(false);
+      setIsDoubleClick(false)
+      setIsDoubleClickCopier(false)
 
     }
     setDeleteIconClicked(false);
+    if (!inputRef.current.contains(event.target)) {
+      setIsInputFocused(false);
+
+    }
   };
-  const handleClickDropper = () => {
-    // Appeler la fonction handleShowPanel lorsque l'élément "dropper" est cliqué
-   // handleShowPanel(field);
+  const [isDraggingg, setIsDragging] = useState(false);
+  const handleDragStart = () => {
+    setIsDragging(true);
   };
 
+  // Function to handle dragging stop
+  const handleDragStop = () => {
+    setIsDragging(false);
+  };
 
   const signatureRef = useRef();
   const signatureCanvasRef = useRef(null);
@@ -226,9 +265,12 @@ const[selectedField , setSelectedField]=useState()
     signatureRef.current.clear();
   };
 
-  const handleSave = () => {
-    const signatureData = signatureRef.current.toDataURL(); // Obtient l'image de la signature au format Data URL
-    // Traitez les données de signature (enregistrez-les sur un serveur, par exemple)
+  const [inputContent, setInputContent] = useState(''); // State to store input content
+
+  const handleCopyClick = (content) => {
+    setInputContent(content);
+    setSelectedField(content);
+    setOpenModal(true);
   };
   const [signatureDataURL, setSignatureDataURL] = useState('');
 
@@ -237,6 +279,48 @@ const[selectedField , setSelectedField]=useState()
       const signatureData = signatureRef.current.toDataURL(); // Obtient l'image de la signature au format Data URL
       setSignatureDataURL(signatureData); // Met à jour l'état avec l'URL de l'image de signature
       setContent(`<img src="${signatureData}" alt="Signature" style="max-width: 100px; maw-height:50px"  />${inputValue}`);
+      console.log(signatureData)
+    }
+  };
+
+
+
+
+  const moveableRef = useRef(null);
+  const [position, setPosition] = useState({ left: 0, top: 0 });
+
+  const handleDrag = ({ left, top }) => {
+    setPosition({ left, top });
+  };
+
+
+
+
+
+
+  const handleCopyToAllPages = () => {
+    if (content) {
+      const updatedFieldsByPages = { ...fieldsByPages };
+
+      for (const pageIndex in updatedFieldsByPages) {
+        const newFieldId = `00${pageIndex}${Object.keys(updatedFieldsByPages[pageIndex]).length}`;
+        const originalField = updatedFieldsByPages[pageIndex][field._id];
+
+        updatedFieldsByPages[pageIndex] = {
+          ...updatedFieldsByPages[pageIndex],
+          [newFieldId]: {
+            ...field,
+            _id: newFieldId,
+            page: parseInt(pageIndex),
+            top: originalField.top + 50,
+            left: originalField.left + 50,
+            data: content,
+          },
+        };
+      }
+
+      setFieldsByPages(updatedFieldsByPages);
+      console.log(width)
     }
   };
 
@@ -245,40 +329,53 @@ const[selectedField , setSelectedField]=useState()
 
 
 
+  const [resizableWidth, setResizableWidth] = useState(field.width);
+  const [resizableHeight, setResizableHeight] = useState(field.height);
 
 
 
 
-
-
-
-
-  const [isResizing, setIsResizing] = useState(false);
-
-
-
-
+  const handleResize = ({ width, height }) => {
+    setResizableWidth(width);
+    setResizableHeight(height);
+  };
 
   return (
+
+
     <div
+
     className="inputContainer"
-    ref={dragRef}
-    onDoubleClick={handleDeleteClickOut}
-      onClick={(event)=>{
-        handleClick(event);
-        handleMouseEnter(event);
+    onDoubleClick={(event) => {
+      handleMouseEnter(event);
+      handleDeleteClickOut(event)}}
+    onClick={(event) => {
+      handleClick(event);
+      handleDoubleClick(event)
+    }}
+  >
 
 
-      handleClickDropper();
-      }}
-    >
-     <div  style={{ display: 'flex', alignItems: 'center' }}>
+  <div
 
+   ref={moveableRef}
+style={{
+  position: 'absolute',
+  left: position.left,
+  top: position.top,
+
+}}
+
+>
 
      {showInput &&  (
 
+
+
       <ContentEditable
 
+      disabled={!isEditable}
+className={`${styles.box} ${isInputFocused ? styles.blueFrame : ''}`}
       innerRef={(element) => {
         dragRef(element);
         inputRef.current = element;
@@ -287,17 +384,27 @@ const[selectedField , setSelectedField]=useState()
         html={content}
         onChange={(event) => {
           handleInputChange(event);
-          handleChange(event); // Call your handleChange function if needed
+          handleChange(event);
         }}
-        disabled={!isEditable}
-        onDoubleClick={(event)=>{
 
-         handleDeleteClickOut(event);
-        handleDoubleClick(event);
+        onDoubleClick={(event) => {
+          handleDeleteClickOut(event);
+          handleDoubleClick(event);
+          setIsEditable(true);
+
+
         }}
         onMouseEnter={handleMouseEnterr}
-        className={styles.box}
-        style={{ opacity, top: field.top, left: field.left, border, borderRadius:  '5px', fontSize , color:selectedColor , fontStyle: field.isItalic ? 'italic' : 'normal' ,
+
+        style={{
+          width:"200px",
+          height:"40px",
+       textAlign: 'center',
+       boxSizing: 'border-box',
+padding:'8px',
+marginTop:'15px',
+          left:field.left ,top:field.top,pointerEvents: 'auto',
+       opacity,  border,  fontSize , color:selectedColor , fontStyle: field.isItalic ? 'italic' : 'normal' ,
         fontWeight: field.isBold ? 'bold' : 'normal',
         textDecoration: field.isUnderline ? 'underline' : 'none',
         fontSize: inputSize + 'px',
@@ -305,15 +412,17 @@ const[selectedField , setSelectedField]=useState()
       // onDoubleClick={handleDoubleClick}
               showPanel={showPanel}
         value={inputValue}
-       // handleShowPanel={ handleShowPanel}
+
         onBlur={(event) => {
           handleInputBlur(event);
-          handleInputBlur(); // Call your handleInputBlur function if needed
+          handleInputBlur();
         }}
 
       >
 
    </ContentEditable>
+
+
 
      )}
 
@@ -322,8 +431,8 @@ const[selectedField , setSelectedField]=useState()
             className={styles.transparentButton}
             style={{
               position: 'absolute',
-              top: field.top - 22,
-              left: field.left - 15,
+              top: field.top - 1,
+              left: field.left + 160,
 
             }}
             onClick={handleDeleteClick}
@@ -332,11 +441,57 @@ const[selectedField , setSelectedField]=useState()
           </button>
         )}
 
+{isDoubleClickCopier &&  (
+          <button
+            className={styles.transparentButton}
+            style={{
+              position: 'absolute',
+              top: field.top - 2,
+              left: field.left +130,
+              fontSize:'5px'
+            }}
+            onClick={() => handleCopyToAllPages(content)}
+          >
+            <MaterialIcon icon="content_copy"   />
+
+          </button>
+          )}
+
+<Modal
+       open={openModal}
+        onClose={() => setOpenModal(false)}
+applyToAllPages={handleCopyToAllPages}
+        setContent={setContent}/>
+</div>
 
 
 
+{currentPage === field.page && (
+      <Moveable
+      throttleResize={1}
+      renderDirections={["nw", "n", "ne", "w", "e", "sw", "s", "se"]}
+        target={moveableRef.current}
+        draggable={true}
+        onDrag={handleDrag}
+        container={null}
+        origin={false}
 
-    </div>
+        bounds={{
+          left: 0,
+          top: 0,
+          right: width ,
+          bottom: height
+
+        }}
+
+        keepRatio={false}
+        edge={true}
+        onResize={handleResize}
+        snapThreshold={5}
+        snapCenter={false}
+      />
+    )}
+
     {showPanelDate &&  (
        <div
 
@@ -364,7 +519,7 @@ const[selectedField , setSelectedField]=useState()
       className='styles.ll'
         ref={(ref) => {
           signatureRef.current = ref;
-          signatureCanvasRef.current = ref; // Conservez la référence à SignatureCanvas
+          signatureCanvasRef.current = ref;
         }}
         penColor={penColor} // Utilisez l'état de la couleur du stylo
         canvasProps={{ width: 300, height: 300, className: 'signatureCanvas', top: '30px' }}
@@ -378,8 +533,7 @@ const[selectedField , setSelectedField]=useState()
       <button onClick={handleClear}>Effacer</button>
       &nbsp;&nbsp;  <button onClick={handleSaveImga}>Sauvegarder</button>
 
-
-      </div>
+     </div>
           </div>
         )}
 
@@ -390,7 +544,7 @@ const[selectedField , setSelectedField]=useState()
           style={{ zIndex: 999 , width:'350px' , height:'550px' , backgroundColor:'whitesmoke' , position: 'absolute', top: '50%', left: '-15%', transform: 'translate(-50%, -50%)' }}
         >
           {/* Add the color picker to the panel */}
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <b style={{fontFamily:'Cambria'  , fontSize:'15px'}}>Changer le couleur</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onDoubleClick={() => setShowPanel(false)} className={styles.transparentButton}> <MaterialIcon icon="close" > </MaterialIcon> </button>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <b style={{fontFamily:'Cambria'  , fontSize:'15px'}}>Changer le couleur</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onClick={() => setShowPanel(false)} className={styles.transparentButton}> <MaterialIcon icon="close" > </MaterialIcon> </button>
 
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <div style={{padding:'20px'}}>
           <ChromePicker color={selectedColor} onChange={handleColorChange}   />
@@ -425,7 +579,36 @@ const[selectedField , setSelectedField]=useState()
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <button  onClick={handleDeleteClick}>delete Fields </button>
         </div>
       )}
+<ModalTampon
+       open={openModall}
+        onClose={() => setOpenModall(false)}
+
+        setContent={setContent}/>
+<ModalSignaturre
+       open={openModalSign
+      }
+        onClose={() => setOpenModalSign(false)}
+
+        setContent={setContent}/>
+        <ModalText
+       open={openModalText
+      }
+        onClose={() => setOpenModalText(false)}
+setSelectedField={setSelectedField}
+        setContent={setContent}
+        field={field}
+
+        selectedFont={selectedFont}
+        setSelectedFont={setSelectedFont}
+        setInputSize={setInputSize}
+        inputSize={inputSize}
+
+        />
+
+
     </div>
+
+
   );
       }
 export default InteractiveFieldBox;

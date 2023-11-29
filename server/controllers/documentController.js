@@ -10,7 +10,8 @@ const Agenda = require('agenda');
 const moment = require('moment');
 const Jimp = require("jimp")
 var sha512 = require('js-sha512');
-
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
 const { body, validationResult, sanitizeBody } = require("express-validator");
 const { Console } = require('console');
@@ -23,12 +24,12 @@ const mailTransporter = nodemailer.createTransport({
     auth: {
         user: "smartdoc36@gmail.com",
         pass: "vqelrjlirkrkcvis"
-  
-   
+
+
     }
   });
-  
- 
+
+
 //Utitlity function to retrieve email from the JWT.
 function getEmail(req, res) {
    if (!req.cookies.JWT) {
@@ -38,11 +39,11 @@ function getEmail(req, res) {
     let buff = Buffer.from(req.cookies.JWT.split(".")[1], "base64");
     let text = buff.toString("ascii");
     let email = req.cookies.email;
- 
+
     return  email;
   }
 }
-//returns the list of documents owned by the user and the documents shared by others to the user 
+//returns the list of documents owned by the user and the documents shared by others to the user
 exports.getUserDocuments = (req, res, next) => {
     let email = getEmail(req, res);
      User.findOne({ 'email': email }, { ownerdDocuments: 1, sharedDocuments: 1 }).populate('ownedDocuments', { buffer: 0 }).populate('sharedDocuments', { buffer: 0 }).exec((err, resp) => {
@@ -90,6 +91,8 @@ exports.uploadDocument = async (req, res, next) => {
 
 }
 
+
+
 exports.addSigners = async (req, res, next) => {
     let signers = req.body.signers;
     let documentId = req.params.id;
@@ -104,18 +107,18 @@ exports.addSigners = async (req, res, next) => {
                 let timeline = document.timeline;
 
                 signers.forEach((signer, index) => {
-                    if (signer.email === job.attrs.data.email && signer.status==='waiting' ) 
+                    if (signer.email === job.attrs.data.email && signer.status==='waiting' )
                     {
                         signers[index].status = 'expired';
                         timeline.push({ action: 'expired', time: new Date(), email: job.attrs.data.email });
                         document.timeline = timeline;
                         document.signers = signers;
-                        
+
 
                     }
                 })
                 await document.save();
-                
+
             });
             (async function () {
 
@@ -221,7 +224,7 @@ exports.sendEmail = async (req, res, next) => {
                 from: process.env.EMAIL,
                 to: signers[index].email,
                 subject: req.body.subject,
-                body: req.body.body
+                text: req.body.body
             };
 
             await mailTransporter.sendMail(mailOptions);
@@ -263,7 +266,7 @@ exports.getDocment = async (req, res, next) => {
                     }
                 }
             });
- 
+
             document.signers = signers;
             await document.save();
             res.status(200).json(document);
@@ -305,70 +308,104 @@ exports.postComment = async (req, res, next) => {
         res.status(500).json({ err: "Internal Server Error" });
     }
 }
+
+
+exports.addBufferById = async (req, res, next) => {
+  try {
+    const documentId = req.params.id;
+    const newBufferBase64 = req.body.newBuffer;
+    let email = getEmail(req, res);
+
+    const document = await Document.findById(documentId).exec();
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    let signers = document.signers;
+    for (let i = 0; i < signers.length; i++) {
+        let signer = signers[i];
+        if (signer.email === email) {
+            if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
+
+
+
+
+    const newBuffer = Buffer.from(newBufferBase64, 'base64');
+
+
+   // document.buffer = Binary(newBuffer);
+    document.lastModifiedHash = sha512(newBuffer);
+    let timeline = document.timeline;
+    timeline.push({ action: 'signed', time: new Date(), email: getEmail(req, res) });
+    signers[i].status = 'signed';
+    document.timeline = timeline;
+    document.signers = signers;
+    signer.documentSigné=Binary(newBuffer);
+    console.log(signer.documentSigné)
+    await document.save();
+
+    res.status(200).json({ message: 'Buffer added to document successfully' });
+            }}}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+
+const zlib = require('zlib');
 exports.sigDocument = async (req, res, next) => {
-    try {
-        let modifications = req.body.modifications;
-        let scale = req.body.scale;
+  try {
 
-        let email = getEmail(req, res);
-        let documentId = req.params.id;
-        let document = await Document.findById(documentId, { signers: 1, timeline: 1, buffer: 1 }).exec();
-        let user = await User.findOne({ email: email }, { signature: 1, imageSignature: 1, defaultSignature: 1 });
+    const email = getEmail(req, res);
+    const documentId = req.params.id;
+    let newPdfBufferBase64 = req.body.newPdfBufferBase64;
 
+    const decompressedData = zlib.inflateSync(Buffer.from(newPdfBufferBase64, 'base64'));
+    newPdfBufferBase64 = decompressedData.toString('base64');
 
+    const document = await Document.findById(documentId, { signers: 1, timeline: 1 }).exec();
 
+      if (!document) {
+          return res.status(404).json({ error: 'Document not found' });
+      }
 
-        let signers = document.signers;
-        for (let i = 0; i < signers.length; i++) {
-            let signer = signers[i];
-            if (signer.email === email) {
-                if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
+      const signers = document.signers;
 
+      for (let i = 0; i < signers.length; i++) {
+          const signer = signers[i];
 
-
-                    const pdfDoc = await PDFDocument.load(document.buffer);
-                    let pngImageBytes = (user.defaultSignature == 0 ? user.signature : user.imageSignature);
-                    const pngImage = await pdfDoc.embedPng(pngImageBytes);
-                     const pages = pdfDoc.getPages();
-                     modifications.forEach((modification, index) => {
-
-                        if (modification) {
-                            modification.forEach((image, id) => {
-                                let { width, height } = pages[index].getSize();
-                                let imageDims = {
-                                    x: image.x / scale,
-                                    y: height - ((image.y + image.imageheight) / (scale)),
-                                    width: (image.imagewidth / scale),
-                                    height: (image.imageheight / scale)
-                                }
-                                 pages[index].drawImage(pngImage, imageDims)
-                            })
-                        }
-                    })
-                    let pdfBytes = await pdfDoc.save();
-                    document.buffer = Binary(pdfBytes);
-                     document.lastModifiedHash = sha512(pdfBytes);
+          if (signer.email === email) {
+              if (signer.status !== 'signed' && signer.status !== 'rejected' && signer.status !== 'expired') {
+                  const pdfDoc = await PDFDocument.load(newPdfBufferBase64, {
+                      updateMetadata: false,
+                  });
 
 
+                  const pdfBytes = await pdfDoc.save();
+                  document.documentSigné = Binary(pdfBytes);
+                  document.lastModifiedHash = sha512(pdfBytes);
+
+                  const timeline = document.timeline;
+                  timeline.push({ action: 'signed', time: new Date(), email: getEmail(req, res) });
+                  signers[i].status = 'signed';
+
+                  document.timeline = timeline;
+                  document.signers = signers;
+
+                  await document.save();
+              }
+          }
+      }
+
+      res.status(200).json({ message: 'OK' });
+  } catch (err) {
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 
-
-                    let timeline = document.timeline;
-                    timeline.push({ action: 'signed', time: new Date(), email: getEmail(req, res) });
-                    signers[i].status = 'signed';
-                    document.timeline = timeline;
-                    document.signers = signers;
-                    await document.save();
-                }
-            }
-        };
-
-        res.status(200).json({ message: 'ok' });
-    }
-    catch (err) {
-        res.status(500).json({ err: "Internal Server Error" });
-    }
-}
 
 exports.rejectDocument = async (req, res, next) => {
     try {
@@ -383,11 +420,13 @@ exports.rejectDocument = async (req, res, next) => {
                     timeline.push({ action: 'rejected', time: new Date(), email: getEmail(req, res) });
                     signers[index].status = 'rejected';
                     document.timeline = timeline;
+
                 }
             }
         });
 
         document.signers = signers;
+
         await document.save();
         res.status(200).json(document);
     }
@@ -431,9 +470,10 @@ exports.verifyDocument = async (req, res, next) => {
             let doc = await Document.findById(id).exec();
             if (doc) {
 
-            
+
                 if (doc.lastModifiedHash === uploadedDocumentHash) {
                     res.status(200).json({ verified: true, document: doc });
+
                 }
                 else {
                     res.status(200).json({ verified: false });
@@ -455,4 +495,3 @@ exports.verifyDocument = async (req, res, next) => {
 
     }
 }
-      

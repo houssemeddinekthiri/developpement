@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 .App {
   text-align: center;
 }
@@ -35,4 +38,193 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+
+
+.k {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Modal Button */
+.modalButton {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  padding: 12px 24px;
+}
+
+
+/* Modal */
+.overlay {
+  /* background-color: rgba(0, 0, 0, 0.5); */
+
+  width: 100%;
+  height: 100%;
+}
+
+.modalContainer {
+  max-width: 500px;
+  width: 90%;
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+}
+/* Curseur par défaut lorsqu'un élément est déplaçable */
+.draggable-element {
+  cursor: grab;
+}
+
+/* Curseur lorsqu'un élément est en cours de déplacement */
+.draggable-element:active {
+  cursor: grabbing;
+}
+
+.modalContainers {
+  max-width: 900px;
+  width: 90%;
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  background-color: #ffffff;
+
+  box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+}
+.vertical-line {
+  border-left: 1px solid #ccc; /* Ligne verticale */
+  height: 100%;
+  margin: 0;
+}
+
+.modalContainerr {
+  max-width: 700px;
+  width: 90%;
+  position: fixed;
+
+  transform: translate(-50%, -50%);
+  display: flex;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+}
+.imgg {
+  width: 250px;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.modalRight {
+  width: 100%;
+}
+
+.closeBtn {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+
+
+
+  padding: 1rem 2rem;
+}
+
+.btnContainer {
+  display: flex;
+  padding: 1rem 1rem;
+}
+.btnContainer button {
+  width: 90%;
+  margin: .5rem;
+  padding: 16px 0;
+  /* border: none; */
+  border: 1px solid #7f9ecc;
+  /* color: #ffffff; */
+}
+
+.btnPrimary {
+  background-color: #7f9ecc;;
+  color: white;
+}
+
+.btnOutline {
+  /* background-color: #a76a99; */
+  background-color: white;
+  color: #411b57;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+@media screen and (max-width: 500px) {
+  .modalContainer {
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: 100vh;
+  }
+  .imgg {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: cover;
+  }
+
+  .heading {
+    margin: 1rem;
+  }
+}
+
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  border: 5px dashed rgb(117, 112, 112);
+  padding: 2rem;
+  background-color:royalblue;
+}
+@font-face {
+  font-family: 'Sacramento';
+  src: local('Sacramento'), url(./sc.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.labell {
+  font-family: 'Sacramento', cursive;
+}
+.fixed-navbar {
+  width: 100%;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  /* ... autres styles ... */
+}
+
+.label2{
+  font-family: 'Brush Script MT', cursive;
+}
+.label{
+  font-family: Copperplate, Papyrus, fantasy;
+
 }

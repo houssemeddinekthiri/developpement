@@ -17,7 +17,7 @@ import axios from 'axios';
 import { useParams } from 'react-router';
 
 function getSteps() {
-  return ['Upload A Document', 'Add  People to Sign', 'Generate Email'];
+  return ['Upload A Document', 'Add  People to Sign'];
 }
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -68,7 +68,7 @@ function ColorlibStepIcon(props) {
   const icons = {
     1: <CloudUploadIcon />,
     2: <GroupAddIcon />,
-    3: <EmailIcon />,
+
   };
 
   return (
@@ -126,12 +126,13 @@ export default function WorkFlowStepper(props) {
           }
          else if(status==='added_signers'){
             setState({...state,activeStep:2})
+
           }
           else {
             window.location.replace('/add/new');
           }
         }
-  
+
       )
     }
     else{
@@ -164,9 +165,7 @@ export default function WorkFlowStepper(props) {
     if (state.activeStep == 1) {
       return (<Signers changeState={handleNext} />)
     }
-    if (state.activeStep == 2) {
-      return (<EmailBox changeState={viewFile} />)
-    }
+
   }
   return (
     <div className={classes.root}>

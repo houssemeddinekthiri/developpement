@@ -2,15 +2,16 @@
     display: flex;
     align-items: center;
     border: 2px solid #c1eaf1;
-  
+
     padding: 4px;
     width: 150px;
     height: 23px;
     margin-left: 40px;
   }
   .iconne{
-    background-color: #c1eaf1;
-    height: 19px;
+    background-color: rgb(157, 194, 231);
+    height: 38.5px;
+    align-items: center;
     padding: 8px;
     display: flex;
   }
@@ -18,13 +19,16 @@
     flex: 1;
     border: none;
     outline: none;
-   
+
 
   }
-  
+
   .user-icon {
     margin-left: 10px;
     font-size: 18px;
     color: rgb(248, 249, 250);
   }
-  
+  /* styles.css */
+.moveable-active .moveable-control {
+  display: none; /* Rend le cadre de Moveable et les poignées de redimensionnement invisibles */
+}

@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken'); // import jsonwebtoken
 const { google } = require('googleapis');
 const Document = require('../models/document');
 const client = new google.auth.OAuth2(process.env.googleClientId, process.env.googleClientSecret, "http://localhost:3001/auth/google/callback");
- 
+
 const passport = require('passport');
 function getEmail(req, res) {
    if (!req.cookies.JWT) {
@@ -18,7 +18,7 @@ function getEmail(req, res) {
     let buff = Buffer.from(req.cookies.JWT.split(".")[1], "base64");
     let text = buff.toString("ascii");
     let email = req.cookies.email;
- 
+
     return  email;
   }
 }
@@ -52,8 +52,8 @@ const unique = (array) =>{
     return newList;
 }
 exports.getFrontPageAnalytics = async (req,res,next)=>{
- 
- 
+
+
 
     let email = getEmail(req);
     let documents = await User.findOne({email:email},{sharedDocuments:1,ownedDocuments:1}).populate('ownedDocuments', { buffer: 0 }).populate('sharedDocuments', { buffer: 0 }).exec();
@@ -171,6 +171,26 @@ exports.analytics = async (req,res,next)=>{
 
 }
 
+
+exports.uploadTampon = async(req,res,next)=>{
+  try{
+      let email = getEmail(req,res);
+       let user =  await User.findOne({email:email},{TamponImage:1}).exec();
+      let image = req.files.doc;
+       let imagePath = image.tempFilePath;
+
+      let imageBuffer  = await convertToPng(imagePath);
+
+
+          user.TamponImage  = Binary(imageBuffer);
+
+      await user.save();
+      res.status(200).json({message:'ok'});
+  }
+  catch(err){
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 exports.uploadSignature = async(req,res,next)=>{
     try{
         let email = getEmail(req,res);
@@ -179,10 +199,10 @@ exports.uploadSignature = async(req,res,next)=>{
          let imagePath = image.tempFilePath;
 
         let imageBuffer  = await convertToPng(imagePath);
- 
+
          if(req.body.type==="handwritten"){
            user.signature  = Binary(imageBuffer);
- 
+
         }
         else{
             user.imageSignature  = Binary(imageBuffer);
@@ -203,6 +223,17 @@ exports.getSignatures = async(req,res,next)=>{
     catch(err){
         res.status(500).json({ error: "Internal Server Error" });
     }
+}
+
+exports.getTampon = async(req,res,next)=>{
+  try{
+      let email = getEmail(req,res);
+      let user =  await User.findOne({email:email},{TamponImage:1}).exec();
+      res.status(200).json(user);
+  }
+  catch(err){
+      res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 exports.setDefaultSignature  =  async(req,res,next)=>{
     try{
@@ -272,30 +303,29 @@ exports.getKeyStatus = async (req,res,next)=>{
 
 
 
- 
-   
+
+
 
 exports.signup = async (req, res) => {
     try {
       const { name, email, password } = req.body;
-      
+
       if (!email || !password || !name) {
         return res.status(400).json({ message: "Please provide all the required fields." });
       }
-      
+
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
         return res.status(400).json({ message: "A user with this email already exists." });
       }
 
-      // hash the password with bcrypt
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = new User({ name, email, password: hashedPassword }); // save hashed password
       await user.save();
-  
+
       res.status(201).json({ message: "User created successfully." });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -359,7 +389,7 @@ exports.signup = async (req, res) => {
 
         // user is now logged in
         res.status(200).json({ message: "Logged in successfully", token: token });
-        
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

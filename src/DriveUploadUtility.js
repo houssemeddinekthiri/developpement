@@ -46,7 +46,7 @@ export default class GoogleChooser extends React.Component {
 
   componentDidMount() {
     if (this.isGoogleReady()) {
-    
+
       this.onApiLoad();
     } else if (!scriptLoadingStarted) {
       scriptLoadingStarted = true;
